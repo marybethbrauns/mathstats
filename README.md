@@ -1,4 +1,4 @@
-# Statistics Homework Solutions
+# MathStats Homework 2 Solutions
 
 ## Problem 1
 ### Part (a) 
