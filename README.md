@@ -1,489 +1,337 @@
-# MathStats Homework 2 Solutions
+# Numerical Analysis of Integration Methods
 
-## Problem 1
-### Part (a) 
-Let X₁, ..., X₁₀ be a random sample from a N(5, 8) distribution and Y₁, ..., Y₁₅ an independent random sample from a N(-2, 16) distribution.
+## Problem Statement
 
-#### i. Distribution of V = X̄₁₀ - Ȳ₁₅
-We know that if X₁, ..., Xₙ ~ N(μ, σ²), then X̄ₙ ~ N(μ, σ²/n).
+We are asked to analyze and compare different numerical integration methods for evaluating the definite integral:
 
-Therefore:
-- X̄₁₀ ~ N(5, 8/10) = N(5, 0.8)
-- Ȳ₁₅ ~ N(-2, 16/15) = N(-2, 1.0667)
+I(f) = the integral from 0 to π of e^x cos(x) dx
 
-For the difference of independent normal random variables:
-- V = X̄₁₀ - Ȳ₁₅ ~ N(5-(-2), 0.8 + 1.0667) = N(7, 1.8667)
+The specific tasks are:
 
-So V follows a normal distribution with mean μᵥ = 7 and variance σ²ᵥ = 1.8667.
+a) Evaluate the integral exactly using the Fundamental Theorem of Calculus.
 
-#### ii. Calculate P(6 < V < 9)
-For a normal random variable, we standardize:
+b) Implement the Composite Midpoint Rule with n = 2^i, where i = 1, 2, ..., 9, compute the approximation In(f), and determine the error En(f) = I(f) - In(f). Analyze by what factor the error decreases as n is doubled and explain why.
 
-P(6 < V < 9) = P((6-7)/√1.8667 < Z < (9-7)/√1.8667) = P(-0.7321 < Z < 1.4642)
+c) Repeat part (b) using the Composite Trapezoidal Rule.
 
-Using the standard normal CDF:
+d) Repeat part (b) using the Corrected Trapezoidal Rule.
 
-P(-0.7321 < Z < 1.4642) = Φ(1.4642) - Φ(-0.7321) = Φ(1.4642) - (1-Φ(0.7321))
-                         = Φ(1.4642) + Φ(0.7321) - 1 
-                         = 0.9284 + 0.7680 - 1 
-                         = 0.6964
+e) Repeat part (b) using the Composite Simpson's Rule with n = 2^i, where i = 1, 2, ..., 7. Analyze the error reduction factor and explain why.
 
-Therefore, P(6 < V < 9) = 0.6964
+f) Discuss the accuracy of the approximations and the computational effort involved.
 
-#### iii. Simulation
+## (a) Exact Integral Evaluation
 
-```python
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy import stats
+To evaluate the integral from 0 to π of e^x cos(x) dx exactly, we'll use the Fundamental Theorem of Calculus by finding the antiderivative.
 
-np.random.seed(123)
-nsim = 10000
-v_samples = np.zeros(nsim)
+For f(x) = e^x cos(x), we'll use integration by parts twice:
 
-for i in range(nsim):
-    x_sample = np.random.normal(5, np.sqrt(8), size=10)
-    y_sample = np.random.normal(-2, np.sqrt(16), size=15)
-    v_samples[i] = np.mean(x_sample) - np.mean(y_sample)
+Let u = e^x, dv = cos(x)dx  
+Then du = e^x dx, v = sin(x)
 
-# Mean and variance of simulated values
-print(f"Mean: {np.mean(v_samples):.4f}")  # Should be close to 7
-print(f"Variance: {np.var(v_samples):.4f}")   # Should be close to 1.8667
+∫ e^x cos(x) dx = e^x sin(x) - ∫ e^x sin(x) dx
 
-# Proportion between 6 and 9
-proportion = np.mean((v_samples > 6) & (v_samples < 9))
-print(f"Proportion between 6 and 9: {proportion:.4f}")  # Should be close to 0.6964
+For the remaining integral, let u = e^x, dv = sin(x)dx  
+Then du = e^x dx, v = -cos(x)
 
-# Plot histogram with PDF overlay
-plt.figure(figsize=(10, 6))
-plt.hist(v_samples, bins=30, density=True, alpha=0.7, label='Simulated Values')
-x = np.linspace(2, 12, 1000)
-plt.plot(x, stats.norm.pdf(x, 7, np.sqrt(1.8667)), 'r-', lw=2, label='Theoretical PDF')
-plt.title('Histogram of V with PDF Overlay')
-plt.xlabel('V = X̄ - Ȳ')
-plt.legend()
-plt.grid(True, alpha=0.3)
-plt.show()
-```
+∫ e^x sin(x) dx = -e^x cos(x) + ∫ e^x cos(x) dx
 
-The simulation results confirm our theoretical calculations. The mean is approximately 7, the variance is close to 1.8667, and the proportion between 6 and 9 is approximately 0.6964.
+Substituting:
+∫ e^x cos(x) dx = e^x sin(x) - (-e^x cos(x) + ∫ e^x cos(x) dx)  
+= e^x sin(x) + e^x cos(x) - ∫ e^x cos(x) dx
 
-### Part (b)
-Let Zᵢ = (Xᵢ - 5)/√8 for 1 ≤ i ≤ 10, and W = ∑ᵢ₌₁¹⁰ Zᵢ²
+Solving for ∫ e^x cos(x) dx:
+2∫ e^x cos(x) dx = e^x sin(x) + e^x cos(x)  
+∫ e^x cos(x) dx = (e^x sin(x) + e^x cos(x))/2
 
-#### i. Distribution of W
-When we standardize Xᵢ ~ N(5, 8) to get Zᵢ = (Xᵢ - 5)/√8, we obtain Zᵢ ~ N(0, 1).
+Therefore, F(x) = (e^x sin(x) + e^x cos(x))/2 is our antiderivative.
 
-The sum of squares of standard normal random variables follows a chi-square distribution:
-W = ∑ᵢ₌₁¹⁰ Zᵢ² ~ χ²(10)
+I(f) = F(π) - F(0)  
+= [(e^π sin(π) + e^π cos(π))/2] - [(e^0 sin(0) + e^0 cos(0))/2]  
+= [(e^π·0 + e^π·(-1))/2] - [(1·0 + 1·1)/2]  
+= [-e^π/2] - [1/2]  
+= -(e^π + 1)/2  
+≈ -12.070346316389633
 
-For a chi-square distribution with k degrees of freedom:
+This exact value will serve as our reference for calculating the error in our numerical approximations.
 
-E[W] = k = 10  
-Var(W) = 2k = 20
+## (b) Composite Midpoint Rule
 
-#### ii. Calculate P(6 < W < 9)
-For a chi-square random variable with 10 degrees of freedom:
+### Method Description
 
-P(6 < W < 9) = F_χ²(10)(9) - F_χ²(10)(6)
+The composite midpoint rule approximates the integral by dividing the interval [0,π] into n subintervals and evaluating the function at the midpoint of each subinterval. This method is a natural choice for numerical integration when function evaluations are costly or when the function is not well-defined at the endpoints.
 
-Using the chi-square CDF:
+The formula for the composite midpoint rule is:
 
-P(6 < W < 9) = 0.4697 - 0.1817 = 0.2880
+I_n(f) = h · sum from i=1 to n of f(x_i)
 
-#### iii. Simulation
+where:
+- h = (b-a)/n is the width of each subinterval
+- x_i = a + (i-1/2)·h is the midpoint of the i-th subinterval
 
-```python
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy import stats
+### Theoretical Error Analysis
 
-np.random.seed(123)
-nsim = 10000
-w_samples = np.zeros(nsim)
+For the midpoint rule, the theoretical error is given by:
 
-for i in range(nsim):
-    x_sample = np.random.normal(5, np.sqrt(8), size=10)
-    z_sample = (x_sample - 5)/np.sqrt(8)
-    w_samples[i] = np.sum(z_sample**2)
+E_n(f) = -(b-a)^3/(24n^2) · f''(ξ)
 
-# Mean and variance of simulated values
-print(f"Mean: {np.mean(w_samples):.4f}")  # Should be close to 10
-print(f"Variance: {np.var(w_samples):.4f}")   # Should be close to 20
+for some ξ ∈ [a,b]. This indicates that the midpoint rule has second-order accuracy, O(h^2), where h = (b-a)/n. When we double n (halve h), we expect the error to decrease by a factor of approximately 4.
 
-# Proportion between 6 and 9
-proportion = np.mean((w_samples > 6) & (w_samples < 9))
-print(f"Proportion between 6 and 9: {proportion:.4f}")  # Should be close to 0.2880
+### Implementation Results
 
-# Plot histogram with PDF overlay
-plt.figure(figsize=(10, 6))
-plt.hist(w_samples, bins=30, density=True, alpha=0.7, label='Simulated Values')
-x = np.linspace(0, 30, 1000)
-plt.plot(x, stats.chi2.pdf(x, df=10), 'r-', lw=2, label='Chi-Square(10) PDF')
-plt.title('Histogram of W with PDF Overlay')
-plt.xlabel('W = Sum of Squared Z_i')
-plt.legend()
-plt.grid(True, alpha=0.3)
-plt.show()
-```
+Results for Composite Midpoint Rule with n = 2^i, i = 1,2,...,9:
 
-The simulation results confirm our theoretical calculations. The mean is approximately 10, the variance is close to 20, and the proportion between 6 and 9 is approximately 0.2880.
+| n    | Approximation | Error        | Convergence Ratio |
+|------|---------------|--------------|-------------------|
+| 2    | -9.28278636   | -2.78755995  | N/A               |
+| 4    | -11.42830201  | -0.64204430  | 4.3417            |
+| 8    | -11.91384577  | -0.15650055  | 4.1025            |
+| 16   | -12.03148013  | -0.03886618  | 4.0267            |
+| 32   | -12.06064608  | -0.00970023  | 4.0067            |
+| 64   | -12.06792228  | -0.00242404  | 4.0017            |
+| 128  | -12.06974037  | -0.00060595  | 4.0004            |
+| 256  | -12.07019483  | -0.00015148  | 4.0001            |
+| 512  | -12.07030845  | -0.00003787  | 4.0000            |
 
-## Problem 2
-Suppose that X₁, X₂, ..., Xₙ is a random sample from a Unif(0, b) distribution. Consider three estimators for b:
+### Convergence Ratio Justification
 
-* b̂₁ = 2X̄
-* b̂₂ = X₍ₙ₎
-* b̂₃ = (n+1)/n·X₍ₙ₎
+The convergence ratio is calculated as |E_n(f)|/|E_(2n)(f)|, which represents how much the error decreases when we double the number of subintervals.
 
-Take n = 10 and b = 4.
+For the midpoint rule, we observe that this ratio consistently approaches 4 as n increases. This confirms the theoretical O(h^2) convergence rate. When n doubles, h is halved, and the error term containing h^2 decreases by a factor of 2^2 = 4.
 
-### Part (a) Find the PDF of b̂₃
-First, let's find the PDF of X₍ₙ₎ (the maximum order statistic).
+The initial convergence ratio (4.3417 for n=2 to n=4) is slightly higher than 4, likely due to the specific behavior of the higher derivatives of our integrand over the interval [0,π]. As n increases, the ratio stabilizes almost exactly at 4, validating the theoretical expectation.
 
-For a Unif(0, b) distribution, the CDF is F(x) = x/b for 0 ≤ x ≤ b.
+The convergence ratio approaching 4 is mathematically justified by the error term in the midpoint rule, which is proportional to 1/n^2. When n doubles to 2n, the error term becomes proportional to 1/(2n)^2 = 1/(4n^2), which is 1/4 of the original error. Therefore, the ratio of consecutive errors |E_n(f)|/|E_(2n)(f)| should approach 4, which is precisely what we observe in our numerical results.
 
-The CDF of X₍ₙ₎ is:
+## (c) Composite Trapezoidal Rule
 
-F_{X₍ₙ₎}(x) = P(X₍ₙ₎ ≤ x) = P(all Xᵢ ≤ x) = (x/b)ⁿ
+### Method Description
 
-The PDF of X₍ₙ₎ is the derivative of its CDF:
+The composite trapezoidal rule approximates the integral by connecting function values at the endpoints of each subinterval with straight lines, creating a series of trapezoids. This method is widely used due to its simplicity and effectiveness for smooth functions.
 
-f_{X₍ₙ₎}(x) = d/dx F_{X₍ₙ₎}(x) = n·xⁿ⁻¹ / bⁿ
+The formula for the composite trapezoidal rule is:
 
-Now, for b̂₃ = (n+1)/n·X₍ₙ₎, we use the change of variable technique.
+I_n(f) = (h/2) · [f(a) + f(b) + 2·sum from i=1 to n-1 of f(a + i·h)]
 
-Let Y = b̂₃ = (n+1)/n·X₍ₙ₎, so X₍ₙ₎ = n/(n+1)·Y. The Jacobian of this transformation is dx/dy = n/(n+1).
+where:
+- h = (b-a)/n is the width of each subinterval
 
-The PDF of Y = b̂₃ is:
+### Theoretical Error Analysis
 
-f_Y(y) = f_{X₍ₙ₎}(n/(n+1)·y) · |dx/dy|
+For the trapezoidal rule, the theoretical error is given by:
 
-       = n·(n/(n+1)·y)ⁿ⁻¹ / bⁿ · n/(n+1)
+E_n(f) = -(b-a)^3/(12n^2) · f''(ξ)
 
-       = nⁿ·yⁿ⁻¹ / ((n+1)ⁿ·bⁿ)
+for some ξ ∈ [a,b]. Like the midpoint rule, the trapezoidal rule has second-order accuracy, O(h^2). When we double n, we expect the error to decrease by a factor of approximately 4.
 
-For n = 10 and b = 4, the PDF of b̂₃ is:
+### Implementation Results
 
-f_{b̂₃}(y) = 10¹⁰·y⁹ / (11¹⁰·4¹⁰) = 10¹⁰·y⁹ / (11¹⁰·2²⁰)
+Results for Composite Trapezoidal Rule with n = 2^i, i = 1,2,...,9:
 
-### Part (b) Probabilities within 0.05 of b
+| n    | Approximation  | Error       | Convergence Ratio |
+|------|----------------|-------------|-------------------|
+| 2    | -17.38925933   | 5.31891301  | N/A               |
+| 4    | -13.33602285   | 1.26567653  | 4.2024            |
+| 8    | -12.38216243   | 0.31181611  | 4.0590            |
+| 16   | -12.14800410   | 0.07765778  | 4.0153            |
+| 32   | -12.08974212   | 0.01939580  | 4.0038            |
+| 64   | -12.07519410   | 0.00484778  | 4.0010            |
+| 128  | -12.07155819   | 0.00121187  | 4.0002            |
+| 256  | -12.07064928   | 0.00030296  | 4.0001            |
+| 512  | -12.07042206   | 0.00007574  | 4.0000            |
 
-#### i. For b̂₁ = 2X̄
-For a Unif(0, b) distribution:
+### Convergence Ratio Justification
 
-E[X] = b/2 = 2  
-Var(X) = b²/12 = 16/12 = 4/3
+Similar to the midpoint rule, the convergence ratio for the trapezoidal rule approaches 4 as n increases, confirming the O(h^2) convergence rate. This is consistent with the theoretical error formula which includes an h^2 term.
 
-Therefore:
+An interesting observation is that while the midpoint rule consistently underestimates the true value (negative errors), the trapezoidal rule consistently overestimates it (positive errors). This is a well-known property: for functions with positive second derivatives in the integration interval, the trapezoidal rule overestimates the integral, while the midpoint rule underestimates it.
 
-E[b̂₁] = 2E[X̄] = 2 · b/2 = b = 4  
-Var(b̂₁) = 4Var(X̄) = 4 · Var(X)/n = 4 · (4/3)/10 = 16/30 = 8/15
+The convergence ratio starts slightly higher at 4.2024 for small n values and stabilizes at almost exactly 4 for larger n values. This matches our theoretical expectations perfectly and validates the implementation.
 
-By the Central Limit Theorem, b̂₁ is approximately normally distributed:
+The mathematical justification is similar to that of the midpoint rule: the error term in the trapezoidal rule is proportional to 1/n^2. When n doubles, the error term becomes proportional to 1/(4n^2), which is 1/4 of the original error. Therefore, the ratio of consecutive errors should approach 4, which is confirmed by our numerical results.
 
-b̂₁ ≈ N(4, 8/15)
+## (d) Corrected Trapezoidal Rule
 
-So:
+### Method Description
 
-P(|b̂₁ - b| < 0.05) = P(3.95 < b̂₁ < 4.05)
+The corrected trapezoidal rule, also known as the Euler-Maclaurin formula, enhances the basic trapezoidal rule by adding a correction term based on the derivatives of the function at the endpoints. This modification significantly improves accuracy without substantially increasing the computational cost.
 
-                    = P((3.95-4)/√(8/15) < Z < (4.05-4)/√(8/15))
+The formula for the corrected trapezoidal rule is:
 
-                    = P(-0.0671 < Z < 0.0671)
+I_n(f) = I_n^T(f) - (h^2/12) · [f'(b) - f'(a)]
 
-                    = 2Φ(0.0671) - 1 = 2(0.5267) - 1 = 0.0534
+where:
+- I_n^T(f) is the approximation from the standard trapezoidal rule
+- f'(x) is the first derivative of f(x)
 
-#### ii. For b̂₂ = X₍ₙ₎
+For our function f(x) = e^x cos(x), the derivative is:
+f'(x) = e^x (cos(x) - sin(x))
 
-P(|b̂₂ - b| < 0.05) = P(3.95 < X₍ₙ₎ < 4)
+### Theoretical Error Analysis
 
-                    = F_{X₍ₙ₎}(4) - F_{X₍ₙ₎}(3.95)
+The error for the corrected trapezoidal rule is of order O(h^4), a significant improvement from the O(h^2) of the basic trapezoidal rule. The Euler-Maclaurin correction effectively eliminates the leading error term in the trapezoidal rule.
 
-                    = (4/4)¹⁰ - (3.95/4)¹⁰
+Theoretically, the error formula is:
 
-                    = 1 - (0.9875)¹⁰ = 1 - 0.8825 = 0.1175
+E_n(f) = -(b-a)^5/(720n^4) · f^(4)(ξ)
 
-#### iii. For b̂₃ = (n+1)/n·X₍ₙ₎
+for some ξ ∈ [a,b]. This indicates that when we double n (halve h), we expect the error to decrease by a factor of approximately 2^4 = 16.
 
-P(|b̂₃ - b| < 0.05) = P(3.95 < 11/10·X₍ₙ₎ < 4.05)
+### Implementation Results
 
-                    = P(10/11 · 3.95 < X₍ₙ₎ < 10/11 · 4.05)
+Results for Corrected Trapezoidal Rule with n = 2^i, i = 1,2,...,9:
 
-                    = P(3.5909 < X₍ₙ₎ < 3.6818)
+| n    | Approximation  | Error        | Convergence Ratio |
+|------|----------------|--------------|-------------------|
+| 2    | -12.42552837   | 0.35518205   | N/A               |
+| 4    | -12.09509011   | 0.02474379   | 14.3544           |
+| 8    | -12.07192924   | 0.00158293   | 15.6317           |
+| 16   | -12.07044580   | 0.00009949   | 15.9109           |
+| 32   | -12.07035254   | 0.00000623   | 15.9779           |
+| 64   | -12.07034671   | 0.00000039   | 15.9945           |
+| 128  | -12.07034634   | 0.00000002   | 15.9986           |
+| 256  | -12.07034632   | 0.00000000   | 15.9997           |
+| 512  | -12.07034632   | 0.00000000   | 16.0005           |
 
-                    = F_{X₍ₙ₎}(3.6818) - F_{X₍ₙ₎}(3.5909)
+### Convergence Ratio Justification
 
-                    = (3.6818/4)¹⁰ - (3.5909/4)¹⁰
+The convergence ratio for the corrected trapezoidal rule approaches 16 as n increases, confirming the theoretical O(h^4) convergence rate. This dramatic improvement over the basic trapezoidal rule demonstrates the power of the Euler-Maclaurin correction.
 
-                    = (0.9205)¹⁰ - (0.8977)¹⁰ = 0.4309 - 0.3259 = 0.1050
+The initial convergence ratio of 14.3544 (from n=2 to n=4) is slightly below 16, but it quickly approaches the theoretical value as n increases. By n=512, the ratio is approximately 16.0005, remarkably close to the expected value of 16. This confirms that the implementation correctly captures the fourth-order accuracy of the method.
 
-#### iv. Comparison
-Comparing the probabilities:
+The progression of the convergence ratio (14.3544 → 15.6317 → 15.9109 → 15.9779 → 15.9945 → 15.9986 → 15.9997 → 16.0005) clearly shows it asymptotically approaching the theoretical value of 16, which is exactly what we would expect from the error analysis.
 
-P(|b̂₁ - b| < 0.05) = 0.0534  
-P(|b̂₂ - b| < 0.05) = 0.1175  
-P(|b̂₃ - b| < 0.05) = 0.1050  
+The mathematical justification is based on the error term in the corrected trapezoidal rule, which is proportional to 1/n^4. When n doubles, the error term becomes proportional to 1/(16n^4), which is 1/16 of the original error. Therefore, the ratio of consecutive errors should approach 16, which is confirmed by our numerical results with remarkable precision.
 
-The estimator b̂₂ = X₍ₙ₎ has the highest probability of being within 0.05 of b.
+## (e) Composite Simpson's Rule
 
-### Part (c) Simulation
+### Method Description
 
-```python
-import numpy as np
+The composite Simpson's rule approximates the integral by using quadratic interpolation over pairs of subintervals. It effectively fits a parabola through three consecutive points and integrates the resulting function. Simpson's rule is widely used because it achieves high-order accuracy without requiring derivatives.
 
-np.random.seed(123)
-nsim = 10000
-b = 4
-n = 10
+The formula for the composite Simpson's rule is:
 
-b1_values = np.zeros(nsim)
-b2_values = np.zeros(nsim)
-b3_values = np.zeros(nsim)
+I_n(f) = (h/3) · [f(a) + f(b) + 4·sum from i=1 to k of f(x_(2i-1)) + 2·sum from i=1 to k-1 of f(x_(2i))]
 
-for i in range(nsim):
-    sample = np.random.uniform(0, b, size=n)
-    b1_values[i] = 2 * np.mean(sample)
-    b2_values[i] = np.max(sample)
-    b3_values[i] = ((n+1)/n) * np.max(sample)
+where:
+- k = n/2 (n must be even)
+- h = (b-a)/n
+- x_i = a + i·h
 
-# Proportions within 0.05 of b
-print(f"Proportion for b1: {np.mean(np.abs(b1_values - b) < 0.05):.4f}")  # Should be close to 0.0534
-print(f"Proportion for b2: {np.mean(np.abs(b2_values - b) < 0.05):.4f}")  # Should be close to 0.1175
-print(f"Proportion for b3: {np.mean(np.abs(b3_values - b) < 0.05):.4f}")  # Should be close to 0.1050
-```
+### Theoretical Error Analysis
 
-The simulation results confirm our theoretical calculations.
+For Simpson's rule, the theoretical error is given by:
 
-### Part (d) General estimator b̂ = cX₍ₙ₎
+E_n(f) = -(b-a)^5/(180n^4) · f^(4)(ξ)
 
-#### i. Mean Square Error
-For the general estimator b̂ = cX₍ₙ₎, the MSE is:
+for some ξ ∈ [a,b]. This indicates that Simpson's rule has fourth-order accuracy, O(h^4). When we double n (halve h), we expect the error to decrease by a factor of approximately 2^4 = 16.
 
-MSE(b̂) = E[(b̂ - b)²] = E[(cX₍ₙ₎ - b)²]
+### Implementation Results
 
-= E[c²X₍ₙ₎² - 2cbX₍ₙ₎ + b²]
+Results for Composite Simpson's Rule with n = 2^i, i = 1,2,...,7:
 
-= c²E[X₍ₙ₎²] - 2cbE[X₍ₙ₎] + b²
+| n    | Approximation  | Error        | Convergence Ratio |
+|------|----------------|--------------|-------------------|
+| 2    | -11.59283955   | -0.47750676  | N/A               |
+| 4    | -11.98494402   | -0.08540230  | 5.5913            |
+| 8    | -12.06420896   | -0.00613736  | 13.9152           |
+| 16   | -12.06995132   | -0.00039499  | 15.5379           |
+| 32   | -12.07032146   | -0.00002486  | 15.8885           |
+| 64   | -12.07034476   | -0.00000156  | 15.9724           |
+| 128  | -12.07034622   | -0.00000010  | 15.9931           |
 
-We need to calculate E[X₍ₙ₎] and E[X₍ₙ₎²].
+### Convergence Ratio Justification
 
-For a Unif(0, b) distribution with PDF f_{X₍ₙ₎}(x) = n·x^(n-1)/b^n:
+The convergence ratio for Simpson's rule shows an interesting progression. For small n values, the ratio is significantly lower than the theoretical value of 16, but it rapidly approaches this value as n increases.
 
-E[X₍ₙ₎] = ∫₀ᵇ x · n·xⁿ⁻¹/bⁿ dx 
-       = n/bⁿ · ∫₀ᵇ xⁿ dx 
-       = n/bⁿ · bⁿ⁺¹/(n+1) 
-       = n·b/(n+1)
+For n=2 to n=4, the ratio is only 5.5913, but by n=8 to n=16, it reaches 15.5379, and for n=64 to n=128, it's 15.9931, very close to the theoretical value of 16.
 
-E[X₍ₙ₎²] = ∫₀ᵇ x² · n·xⁿ⁻¹/bⁿ dx 
-         = n/bⁿ · ∫₀ᵇ xⁿ⁺¹ dx 
-         = n/bⁿ · bⁿ⁺²/(n+2) 
-         = n·b²/(n+2)
+This behavior can be explained by considering the complete error expansion for Simpson's rule. While the leading term is O(h^4), there are additional higher-order terms that become less significant as h decreases (or n increases). For small n values, these higher-order terms still contribute noticeably to the error, causing the convergence ratio to deviate from 16. As n increases, the O(h^4) term dominates, and the ratio approaches the theoretical value of 16.
 
-Substituting into the MSE:
+The observed progression (5.5913 → 13.9152 → 15.5379 → 15.8885 → 15.9724 → 15.9931) clearly shows the convergence ratio asymptotically approaching 16, validating the fourth-order accuracy of Simpson's rule.
 
-MSE(b̂) = c² · n·b²/(n+2) - 2cb · n·b/(n+1) + b²
+The mathematical justification, similar to the corrected trapezoidal rule, is based on the error term being proportional to 1/n^4. As n doubles, the error should decrease by a factor of 16, which our data confirms for larger values of n when the leading error term dominates.
 
-       = c²·n·b² / (n+2) - 2c·n·b² / (n+1) + b²
+## (f) Discussion of Accuracy and Computational Effort
 
-#### ii. Minimizing MSE
-To minimize the MSE, we differentiate with respect to c and set equal to zero:
+### Accuracy Comparison
 
-d/dc MSE(b̂) = 2c·n·b² / (n+2) - 2n·b² / (n+1) = 0
+1. **Composite Midpoint Rule**: Demonstrates second-order convergence (O(h^2)). While simple to implement, it requires a large number of function evaluations to achieve high accuracy. With n = 512, the error is still around 3.8×10^-5.
 
-Solving for c:
+   The midpoint rule consistently underestimates the true value of the integral for our function. This is because e^x cos(x) has regions where its second derivative is positive over the integration interval [0,π]. For functions with positive second derivatives, the midpoint rule typically underestimates the integral.
 
-2c·n·b² / (n+2) = 2n·b² / (n+1)
+2. **Composite Trapezoidal Rule**: Also exhibits second-order convergence (O(h^2)). It produces errors of opposite sign compared to the midpoint rule but similar magnitude. With n = 512, the error is about 7.6×10^-5.
 
-c = (n+2) / (n+1)
+   The trapezoidal rule consistently overestimates the true value of the integral. This complementary behavior to the midpoint rule is a well-known property and can be leveraged in error estimation techniques like Richardson extrapolation.
 
-For n = 10, the optimal value is c = 12/11.
+3. **Corrected Trapezoidal Rule**: Shows fourth-order convergence (O(h^4)). This method dramatically improves upon the basic trapezoidal rule. With just n = 32, it achieves an error of about 6.2×10^-6, which is better than what the midpoint or trapezoidal rules achieve with n = 512.
 
-The bias of this estimator is:
+   The Euler-Maclaurin correction effectively eliminates the leading error term in the trapezoidal rule, resulting in a much higher-order method. For our function, this correction works exceptionally well, providing extremely accurate results even with relatively few subintervals.
 
-Bias(b̂) = E[b̂] - b = E[cX₍ₙ₎] - b = c · E[X₍ₙ₎] - b = c · n·b/(n+1) - b
+4. **Composite Simpson's Rule**: Also exhibits fourth-order convergence (O(h^4)). Its performance is comparable to the corrected trapezoidal rule. With n = 128, the error is approximately 1.0×10^-7.
 
-        = (n+2)/(n+1) · n·b/(n+1) - b 
-        = n(n+2)·b / (n+1)² - b
+   Simpson's rule achieves high-order accuracy by effectively fitting parabolas to the function. For our integrand e^x cos(x), which has significant curvature, this approach is particularly effective. The method does not require derivative evaluations, making it versatile for functions where derivatives are not readily available.
 
-        = b·(n(n+2)/(n+1)² - 1) 
-        = b·(n(n+2) - (n+1)²) / (n+1)²
+### Computational Effort Analysis
 
-        = b·(n² + 2n - n² - 2n - 1) / (n+1)² 
-        = b·(-1) / (n+1)² 
-        = -b / (n+1)²
+1. **Composite Midpoint Rule**: Requires n function evaluations.
+   - Advantages: Simple to implement, no need to evaluate endpoints.
+   - Disadvantages: Slower convergence requires more subintervals for high accuracy.
+   - Computational complexity: O(n) function evaluations to achieve O(1/n^2) accuracy.
 
-For n = 10 and b = 4, the bias is -4/(11²) = -4/121 ≈ -0.0331.
+2. **Composite Trapezoidal Rule**: Requires n+1 function evaluations.
+   - Advantages: Simple to implement, good for periodic functions.
+   - Disadvantages: Same O(h^2) convergence as midpoint rule.
+   - Computational complexity: O(n) function evaluations to achieve O(1/n^2) accuracy.
 
-#### iii. Probability for optimal estimator
-For b̂ = (n+2)/(n+1)·X₍ₙ₎:
+3. **Corrected Trapezoidal Rule**: Requires n+1 function evaluations plus 2 derivative evaluations.
+   - Advantages: Dramatically improved convergence rate (O(h^4)).
+   - Disadvantages: Requires explicit knowledge of the derivative function.
+   - Computational complexity: O(n) function evaluations plus constant overhead for derivatives to achieve O(1/n^4) accuracy.
 
-P(|b̂ - b| < 0.05) = P(3.95 < 12/11·X₍ₙ₎ < 4.05)
+4. **Composite Simpson's Rule**: Requires n+1 function evaluations.
+   - Advantages: Fourth-order convergence without requiring derivatives.
+   - Disadvantages: Slightly more complex implementation than trapezoidal rule.
+   - Computational complexity: O(n) function evaluations to achieve O(1/n^4) accuracy.
 
-= P(11/12 · 3.95 < X₍ₙ₎ < 11/12 · 4.05)
+### Efficiency Analysis
 
-= P(3.6208 < X₍ₙ₎ < 3.7125)
+To quantify the efficiency of each method, we can compare the number of function evaluations required to achieve a specified error tolerance.
 
-= F_{X₍ₙ₎}(3.7125) - F_{X₍ₙ₎}(3.6208)
+For our integral from 0 to π of e^x cos(x) dx:
 
-= (3.7125/4)¹⁰ - (3.6208/4)¹⁰
+- To achieve an error of approximately 10^-5:
+  - Midpoint Rule: Requires n ≈ 512 (512 function evaluations)
+  - Trapezoidal Rule: Requires n ≈ 512 (513 function evaluations)
+  - Corrected Trapezoidal Rule: Requires n ≈ 16 (17 function evaluations + 2 derivative evaluations)
+  - Simpson's Rule: Requires n ≈ 16 (17 function evaluations)
 
-= (0.9281)¹⁰ - (0.9052)¹⁰ = 0.4728 - 0.3762 = 0.0966
+This comparison clearly demonstrates the superior efficiency of the higher-order methods. The corrected trapezoidal rule and Simpson's rule require approximately 1/32 of the function evaluations needed by the second-order methods to achieve the same accuracy.
 
-## Problem 3
-A statistic used in testing hypotheses concerning categorical data is the Pearson Chi-Square statistic.
+The corrected trapezoidal rule and Simpson's rule are clearly superior in terms of accuracy per function evaluation. With n = 64, both methods achieve an error on the order of 10^-7, while the basic midpoint and trapezoidal rules would require n > 4096 to achieve similar accuracy.
 
-### Part (a) Type of random variable for Oᵢ
-If a fair die is rolled n times, Oᵢ represents the number of times face i appears.
+### Theoretical Validation
 
-Since each roll has probability 1/6 of showing face i, and the rolls are independent, Oᵢ follows a binomial distribution:
+We can validate our observed convergence rates by comparing them with the theoretical error terms for each method:
 
-Oᵢ ~ Binomial(n, 1/6)
+1. Midpoint Rule: E_n(f) = O(h^2) ∝ 1/n^2
+   - Observed: Convergence ratio ≈ 4 = 2^2 when n doubles (h halves)
+   - Theoretical: Error should decrease by a factor of 2^2 = 4 when n doubles
+   - Conclusion: Perfect agreement with theory
 
-### Part (b) Expected values Eᵢ
-For a fair die, the expected number of times face i appears in n rolls is:
+2. Trapezoidal Rule: E_n(f) = O(h^2) ∝ 1/n^2
+   - Observed: Convergence ratio ≈ 4 = 2^2 when n doubles
+   - Theoretical: Error should decrease by a factor of 2^2 = 4 when n doubles
+   - Conclusion: Perfect agreement with theory
 
-Eᵢ = n · P(face i) = n · 1/6 = n/6
+3. Corrected Trapezoidal Rule: E_n(f) = O(h^4) ∝ 1/n^4
+   - Observed: Convergence ratio approaches 16 = 2^4 when n doubles
+   - Theoretical: Error should decrease by a factor of 2^4 = 16 when n doubles
+   - Conclusion: Excellent agreement with theory
 
-### Part (c) Expected value of χ²
-The Pearson Chi-Square statistic is:
+4. Simpson's Rule: E_n(f) = O(h^4) ∝ 1/n^4
+   - Observed: Convergence ratio approaches 16 = 2^4 as n increases
+   - Theoretical: Error should decrease by a factor of 2^4 = 16 when n doubles
+   - Conclusion: Good agreement with theory, especially for larger n values
 
-χ² = ∑ᵢ₌₁⁶ (Oᵢ - Eᵢ)²/Eᵢ
-
-For a single term:
-
-E[(Oᵢ - Eᵢ)²] = Var(Oᵢ) = np(1-p) = n · 1/6 · 5/6 = 5n/36
-
-E[(Oᵢ - Eᵢ)²/Eᵢ] = E[(Oᵢ - Eᵢ)²]/Eᵢ = (5n/36)/(n/6) = 5/6
-
-For the sum of 6 terms:
-
-E[χ²] = ∑ᵢ₌₁⁶ E[(Oᵢ - Eᵢ)²/Eᵢ] = 6 · 5/6 = 5
-
-Note: For a chi-square test with k categories, the degrees of freedom is k-1 = 5, and the expected value of the chi-square statistic under the null hypothesis is equal to the degrees of freedom, which is 5. This confirms our calculation.
-
-### Part (d) Calculate χ² for observed data
-
-With n = 100, Eᵢ = n/6 = 100/6 = 16.67 for each face.
-
-Observed counts: [25, 12, 21, 18, 16, 8]
-
-χ² = ∑ᵢ₌₁⁶ (Oᵢ - Eᵢ)²/Eᵢ
-
-   = (25 - 16.67)²/16.67 + (12 - 16.67)²/16.67 + (21 - 16.67)²/16.67 
-     + (18 - 16.67)²/16.67 + (16 - 16.67)²/16.67 + (8 - 16.67)²/16.67
-
-   = 4.18 + 1.31 + 1.13 + 0.11 + 0.03 + 4.52 
-   = 11.28
-
-### Part (e) Simulation for distribution of χ²
-
-```python
-import numpy as np
-import matplotlib.pyplot as plt
-
-np.random.seed(123)
-nsim = 10000
-chi_sq_samples = np.zeros(nsim)
-
-for i in range(nsim):
-    # Simulate 100 rolls of a fair die
-    rolls = np.random.randint(1, 7, size=100)
-    # Count occurrences of each face
-    observed = np.zeros(6)
-    for j in range(1, 7):
-        observed[j-1] = np.sum(rolls == j)
-    # Expected counts (16.67 for each face)
-    expected = np.ones(6) * (100/6)
-    # Calculate chi-square statistic
-    chi_sq_samples[i] = np.sum((observed - expected)**2 / expected)
-
-# Plot histogram
-plt.figure(figsize=(10, 6))
-plt.hist(chi_sq_samples, bins=30, density=True, alpha=0.7)
-plt.title('Distribution of Chi-Square Statistic')
-plt.xlabel('Chi-Square Value')
-plt.grid(True, alpha=0.3)
-plt.show()
-
-# Calculate p-value (proportion of simulated values >= observed value)
-p_value = np.mean(chi_sq_samples >= 11.28)
-print(f"p-value = {p_value:.4f}")
-```
-
-The p-value represents the probability of observing a chi-square statistic at least as extreme as 11.28 if the die is fair. If the p-value is small (typically < 0.05), we would reject the null hypothesis that the die is fair.
-
-Based on our simulation, if the p-value is approximately 0.046, this suggests that the observed pattern of rolls is unlikely to occur by chance if the die is truly fair. Therefore, we have evidence to suggest that the die is not fair.
-
-## Problem 4
-Let (X₁, Y₁), (X₂, Y₂), ..., (Xₙ, Yₙ) be a random sample from some joint distribution F_{X,Y}.
-
-### Part (a) Show that Cov(X̄, Ȳ) = C/n
-Using properties of covariance:
-
-Cov(X̄, Ȳ) = Cov(1/n ∑ᵢ₌₁ⁿ Xᵢ, 1/n ∑ⱼ₌₁ⁿ Yⱼ) = 1/n² ∑ᵢ₌₁ⁿ∑ⱼ₌₁ⁿ Cov(Xᵢ, Yⱼ)
-
-Since Xᵢ and Yⱼ are independent if i ≠ j, Cov(Xᵢ, Yⱼ) = 0 for i ≠ j. Therefore:
-
-Cov(X̄, Ȳ) = 1/n² ∑ᵢ₌₁ⁿ Cov(Xᵢ, Yᵢ) = 1/n² · n · C = C/n
-
-### Part (b) Show that ∑ᵢ₌₁ⁿ (Xᵢ - X̄)(Yᵢ - Ȳ) = ∑ᵢ₌₁ⁿ XᵢYᵢ - nX̄Ȳ
-
-Expanding the left side:
-
-∑ᵢ₌₁ⁿ (Xᵢ - X̄)(Yᵢ - Ȳ) = ∑ᵢ₌₁ⁿ (XᵢYᵢ - XᵢȲ - X̄Yᵢ + X̄Ȳ)
-
-= ∑ᵢ₌₁ⁿ XᵢYᵢ - Ȳ∑ᵢ₌₁ⁿ Xᵢ - X̄∑ᵢ₌₁ⁿ Yᵢ + nX̄Ȳ
-
-= ∑ᵢ₌₁ⁿ XᵢYᵢ - Ȳ(nX̄) - X̄(nȲ) + nX̄Ȳ
-
-= ∑ᵢ₌₁ⁿ XᵢYᵢ - nX̄Ȳ - nX̄Ȳ + nX̄Ȳ
-
-= ∑ᵢ₌₁ⁿ XᵢYᵢ - nX̄Ȳ
-
-### Part (c) Show that μ_{XY} = C + μₓ μᵧ and E(X̄Ȳ) = C/n + μₓ μᵧ
-
-By definition, C = Cov(Xᵢ, Yᵢ) = E[(Xᵢ - μₓ)(Yᵢ - μᵧ)]. Expanding:
-
-C = E[XᵢYᵢ - Xᵢμᵧ - Yᵢμₓ + μₓμᵧ]
-
-= E[XᵢYᵢ] - μᵧ E[Xᵢ] - μₓ E[Yᵢ] + μₓμᵧ
-
-= E[XᵢYᵢ] - μᵧμₓ - μₓμᵧ + μₓμᵧ
-
-= E[XᵢYᵢ] - μₓμᵧ
-
-Rearranging, we get:
-
-E[XᵢYᵢ] = C + μₓμᵧ
-
-Therefore, μ_{XY} = C + μₓ μᵧ.
-
-For the second part:
-
-E[X̄Ȳ] = Cov(X̄, Ȳ) + E[X̄]E[Ȳ] = C/n + μₓμᵧ
-
-### Part (d) Show that sample covariance is an unbiased estimator
-The sample covariance is:
-
-s_{XY} = 1/(n-1) ∑ᵢ₌₁ⁿ (Xᵢ - X̄)(Yᵢ - Ȳ)
-
-From part (b):
-
-s_{XY} = 1/(n-1) (∑ᵢ₌₁ⁿ XᵢYᵢ - nX̄Ȳ)
-
-Taking the expected value:
-
-E[s_{XY}] = 1/(n-1) (E[∑ᵢ₌₁ⁿ XᵢYᵢ] - nE[X̄Ȳ])
-
-         = 1/(n-1) (nμ_{XY} - n(C/n + μₓμᵧ))
-
-         = 1/(n-1) (n(C + μₓμᵧ) - C - nμₓμᵧ)
-
-         = 1/(n-1) (nC + nμₓμᵧ - C - nμₓμᵧ)
-
-         = 1/(n-1) ((n-1)C)
-
-         = C
-
-Therefore, the sample covariance is an unbiased estimator of the population covariance.
+The observed convergence rates match the theoretical predictions remarkably well, providing strong validation for both our implementation and the theoretical error analysis of these numerical integration methods.
