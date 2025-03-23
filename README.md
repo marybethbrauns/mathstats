@@ -1,4 +1,4 @@
-# Numerical Integration Methods Analysis
+# Numerical Analaysis HW #6 | Marybeth Brauns
 
 ## Problem 1: Evaluating $\int_{0}^{\pi} e^x \cos x \, dx$
 
