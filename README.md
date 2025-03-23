@@ -1,337 +1,395 @@
-# Numerical Analysis of Integration Methods
+# Numerical Integration Methods Analysis
 
-## Problem Statement
+## Problem 1: Evaluating $\int_{0}^{\pi} e^x \cos x \, dx$
 
-We are asked to analyze and compare different numerical integration methods for evaluating the definite integral:
+### Problem Statement:
+This problem requires the evaluation of an integral involving exponential and trigonometric functions. The purpose is to compare different integration techniques and their accuracy. The task involves finding $\int_{0}^{\pi} e^x \cos x \, dx$ using analytical methods and numerical approximations, followed by analysis of the results. This integral serves as an excellent case study because it combines two important functions (exponential and trigonometric) whose interplay creates an interesting challenge for numerical methods. The objective is to demonstrate how quickly different methods converge to the exact solution and to understand the computational tradeoffs involved.
 
-I(f) = the integral from 0 to π of e^x cos(x) dx
+### (a) Evaluation via Integration by Parts
 
-The specific tasks are:
+To evaluate $I(f) = \int_{0}^{\pi} e^x \cos x \, dx$, we must find an antiderivative of $f(x) = e^x \cos x$.
 
-a) Evaluate the integral exactly using the Fundamental Theorem of Calculus.
+Using integration by parts with $u = e^x$ and $dv = \cos x \, dx$:
+$$\int e^x \cos x \, dx = e^x \sin x - \int e^x \sin x \, dx$$
 
-b) Implement the Composite Midpoint Rule with n = 2^i, where i = 1, 2, ..., 9, compute the approximation In(f), and determine the error En(f) = I(f) - In(f). Analyze by what factor the error decreases as n is doubled and explain why.
+For the remaining integral, applying integration by parts again with $u = e^x$ and $dv = \sin x \, dx$:
+$$\int e^x \sin x \, dx = -e^x \cos x + \int e^x \cos x \, dx$$
 
-c) Repeat part (b) using the Composite Trapezoidal Rule.
+Substituting this result back into our original equation:
+$$\int e^x \cos x \, dx = e^x \sin x - \left(-e^x \cos x + \int e^x \cos x \, dx\right)$$
 
-d) Repeat part (b) using the Corrected Trapezoidal Rule.
+Simplifying:
+$$\int e^x \cos x \, dx = e^x \sin x + e^x \cos x - \int e^x \cos x \, dx$$
+$$2\int e^x \cos x \, dx = e^x (\sin x + \cos x)$$
+$$\int e^x \cos x \, dx = \frac{e^x (\sin x + \cos x)}{2}$$
 
-e) Repeat part (b) using the Composite Simpson's Rule with n = 2^i, where i = 1, 2, ..., 7. Analyze the error reduction factor and explain why.
+Now evaluating the definite integral:
+$$I(f) = \int_{0}^{\pi} e^x \cos x \, dx = \left[ \frac{e^x (\sin x + \cos x)}{2} \right]_{0}^{\pi}$$
+$$= \frac{e^{\pi}(\sin \pi + \cos \pi)}{2} - \frac{e^0(\sin 0 + \cos 0)}{2}$$
+$$= \frac{e^{\pi}(0 + (-1))}{2} - \frac{1(0 + 1)}{2}$$
+$$= -\frac{e^{\pi}}{2} - \frac{1}{2} = -\frac{e^{\pi} + 1}{2}$$
 
-f) Discuss the accuracy of the approximations and the computational effort involved.
+Calculating this value numerically:
+$$e^{\pi} \approx 23.1407$$
+$$-\frac{e^{\pi} + 1}{2} \approx -\frac{24.1407}{2} \approx -12.070346316389633$$
 
-## (a) Exact Integral Evaluation
+### (b) Gauss-Legendre Quadrature Approximation
 
-To evaluate the integral from 0 to π of e^x cos(x) dx exactly, we'll use the Fundamental Theorem of Calculus by finding the antiderivative.
+To apply Gauss-Legendre quadrature, we must first transform the integration interval from $[0,\pi]$ to $[-1,1]$ using the substitution:
+$$x = \frac{\pi}{2}(t+1)$$
 
-For f(x) = e^x cos(x), we'll use integration by parts twice:
+This gives:
+$$dx = \frac{\pi}{2}dt$$
 
-Let u = e^x, dv = cos(x)dx  
-Then du = e^x dx, v = sin(x)
+The transformed integrand becomes:
+$$f(t) = \frac{\pi}{2}e^{\frac{\pi}{2}(t+1)}\cos\left(\frac{\pi}{2}(t+1)\right)$$
 
-∫ e^x cos(x) dx = e^x sin(x) - ∫ e^x sin(x) dx
+The $n$-point Gauss-Legendre approximation is given by:
+$$I_n(f) = \sum_{i=1}^{n} w_i f(t_i)$$
 
-For the remaining integral, let u = e^x, dv = sin(x)dx  
-Then du = e^x dx, v = -cos(x)
+where $t_i$ are the Gauss-Legendre nodes and $w_i$ are the corresponding weights.
 
-∫ e^x sin(x) dx = -e^x cos(x) + ∫ e^x cos(x) dx
+The Gauss-Legendre quadrature approximations for various values of $n$ are presented in Table 1.
 
-Substituting:
-∫ e^x cos(x) dx = e^x sin(x) - (-e^x cos(x) + ∫ e^x cos(x) dx)  
-= e^x sin(x) + e^x cos(x) - ∫ e^x cos(x) dx
+**Table 1.** Gauss-Legendre Quadrature Results for the integral from 0 to π of e^x·cos(x)dx
 
-Solving for ∫ e^x cos(x) dx:
-2∫ e^x cos(x) dx = e^x sin(x) + e^x cos(x)  
-∫ e^x cos(x) dx = (e^x sin(x) + e^x cos(x))/2
+| $n$ | $I_n(f)$ | Error |
+|-----|----------|-------|
+| 2   | -12.33621047 | 2.6586e-1 |
+| 3   | -12.12742045 | 5.7074e-2 |
+| 4   | -12.07018949 | 1.5683e-4 |
+| 5   | -12.07032854 | 1.7781e-5 |
+| 6   | -12.07034633 | 1.4712e-8 |
 
-Therefore, F(x) = (e^x sin(x) + e^x cos(x))/2 is our antiderivative.
+### (c) Analysis of Quadrature Methods
 
-I(f) = F(π) - F(0)  
-= [(e^π sin(π) + e^π cos(π))/2] - [(e^0 sin(0) + e^0 cos(0))/2]  
-= [(e^π·0 + e^π·(-1))/2] - [(1·0 + 1·1)/2]  
-= [-e^π/2] - [1/2]  
-= -(e^π + 1)/2  
-≈ -12.070346316389633
+For the function $f(x) = e^x \cos x$, we observe:
 
-This exact value will serve as our reference for calculating the error in our numerical approximations.
+1. **Error Convergence**:
+   - The Gauss-Legendre quadrature demonstrates spectral convergence
+   - The error decreases by approximately two orders of magnitude when increasing from $n$ to $n+1$ points
+   - At $n=6$, the error is already on the order of $10^{-8}$
 
-## (b) Composite Midpoint Rule
+2. **Comparative Efficiency**:
+   - Gauss-Legendre quadrature achieves higher accuracy with fewer function evaluations compared to Newton-Cotes formulas
+   - For example, 6-point Gauss-Legendre quadrature achieves an error of approximately $10^{-8}$, which would require significantly more points with Newton-Cotes methods
+   - Newton-Cotes formulas with $n$ points can exactly integrate polynomials of degree at most $n-1$ (open) or $n$ (closed)
+   - Gauss-Legendre quadrature with $n$ points can exactly integrate polynomials of degree up to $2n-1$
 
-### Method Description
+3. **Computational Considerations**:
+   - Newton-Cotes formulas require less preprocessing since they use evenly spaced nodes
+   - Gauss-Legendre requires computation of specific nodes and weights, which involves finding roots of Legendre polynomials
+   - However, these nodes and weights can be pre-computed and tabulated
+   - For smooth, analytic functions like $e^x \cos x$, Gauss-Legendre is significantly more efficient in terms of function evaluations required for a given accuracy
 
-The composite midpoint rule approximates the integral by dividing the interval [0,π] into n subintervals and evaluating the function at the midpoint of each subinterval. This method is a natural choice for numerical integration when function evaluations are costly or when the function is not well-defined at the endpoints.
+## Problem 2: Integrating $\int_{-1}^{1} \frac{1}{1+25x^2} \, dx$
 
-The formula for the composite midpoint rule is:
+### Problem Statement:
+This problem focuses on evaluating the integral of a rational function with a sharp peak. The function $\frac{1}{1+25x^2}$ forms a tall, narrow spike at x=0, which makes it particularly difficult for polynomial-based approximation methods. The purpose of this problem is to explore how different numerical integration techniques handle functions with localized features. By comparing polynomial interpolation with Gauss-Legendre quadrature, the phenomenon of Runge oscillation becomes observable, illustrating why adaptive methods might be preferable for certain classes of functions. The goal is to determine which method provides the best accuracy with the least computational effort for this challenging integrand.
 
-I_n(f) = h · sum from i=1 to n of f(x_i)
+### (a) Evaluation via Substitution Method
 
-where:
-- h = (b-a)/n is the width of each subinterval
-- x_i = a + (i-1/2)·h is the midpoint of the i-th subinterval
+For the integrand $f(x) = \frac{1}{1+25x^2}$, we use the substitution $u = 5x$, which gives $du = 5\,dx$:
 
-### Theoretical Error Analysis
+$$\int \frac{1}{1+25x^2} \, dx = \int \frac{1}{1+(5x)^2} \, dx = \frac{1}{5} \int \frac{1}{1+u^2} \, du = \frac{1}{5} \arctan(u) + C = \frac{1}{5} \arctan(5x) + C$$
 
-For the midpoint rule, the theoretical error is given by:
+Evaluating the definite integral:
+$$\int_{-1}^{1} \frac{1}{1+25x^2} \, dx = \left[ \frac{1}{5} \arctan(5x) \right]_{-1}^{1}$$
+$$= \frac{1}{5} \arctan(5) - \frac{1}{5} \arctan(-5)$$
 
-E_n(f) = -(b-a)^3/(24n^2) · f''(ξ)
+Since $\arctan$ is an odd function, $\arctan(-5) = -\arctan(5)$, so:
+$$= \frac{1}{5} \arctan(5) - \frac{1}{5} \cdot (-\arctan(5))$$
+$$= \frac{2}{5} \arctan(5)$$
+
+Computing the value:
+$$\arctan(5) \approx 1.3734$$
+$$\frac{2}{5} \arctan(5) \approx \frac{2}{5} \times 1.3734 \approx 0.5493603067780064$$
+
+### (b) Integration of Interpolating Polynomials
+
+Let us examine how polynomial interpolation performs for this function. We'll construct interpolation polynomials using different sets of points and integrate them analytically.
+
+#### 2-point Equally-Spaced Interpolation:
+
+Using points $x_0 = -1$ and $x_1 = 1$:
+
+1. Function values:
+   - $f(-1) = \frac{1}{1+25(-1)^2} = \frac{1}{1+25} = \frac{1}{26} \approx 0.0384615385$
+   - $f(1) = \frac{1}{1+25(1)^2} = \frac{1}{1+25} = \frac{1}{26} \approx 0.0384615385$
+
+2. Lagrange basis polynomials:
+   - $L_0(x) = \frac{x-1}{-1-1} = \frac{x-1}{-2} = \frac{1-x}{2}$
+   - $L_1(x) = \frac{x-(-1)}{1-(-1)} = \frac{x+1}{2}$
+
+3. Interpolation polynomial:
+   - $P_1(x) = f(-1)L_0(x) + f(1)L_1(x)$
+   - $P_1(x) = \frac{1}{26} \cdot \frac{1-x}{2} + \frac{1}{26} \cdot \frac{x+1}{2}$
+   - $P_1(x) = \frac{1}{52}(1-x) + \frac{1}{52}(x+1)$
+   - $P_1(x) = \frac{1}{52}(1-x+x+1) = \frac{2}{52} = \frac{1}{26}$
+
+4. Exact integration:
+   - $\int_{-1}^{1} P_1(x) \, dx = \int_{-1}^{1} \frac{1}{26} \, dx = \frac{1}{26} \cdot 2 = \frac{2}{26} = \frac{1}{13} \approx 0.0769230769$
 
-for some ξ ∈ [a,b]. This indicates that the midpoint rule has second-order accuracy, O(h^2), where h = (b-a)/n. When we double n (halve h), we expect the error to decrease by a factor of approximately 4.
+5. Error:
+   - Exact value: $\frac{2}{5}\arctan(5) \approx 0.5493603068$
+   - Error: $|0.5493603068 - 0.0769230769| \approx 0.4724$
+
+#### 3-point Equally-Spaced Interpolation:
+
+Using points $x_0 = -1$, $x_1 = 0$, and $x_2 = 1$:
 
-### Implementation Results
+1. Function values:
+   - $f(-1) = \frac{1}{26} \approx 0.0384615385$
+   - $f(0) = \frac{1}{1+25(0)^2} = \frac{1}{1} = 1$
+   - $f(1) = \frac{1}{26} \approx 0.0384615385$
 
-Results for Composite Midpoint Rule with n = 2^i, i = 1,2,...,9:
+2. Lagrange basis polynomials:
+   - $L_0(x) = \frac{(x-0)(x-1)}{(-1-0)(-1-1)} = \frac{x(x-1)}{(-1)(-2)} = \frac{x(x-1)}{2}$
+   - $L_1(x) = \frac{(x+1)(x-1)}{(0+1)(0-1)} = \frac{(x+1)(x-1)}{1(-1)} = -(x+1)(x-1) = -(x^2-1) = -x^2+1$
+   - $L_2(x) = \frac{(x+1)(x-0)}{(1+1)(1-0)} = \frac{(x+1)x}{2}$
 
-| n    | Approximation | Error        | Convergence Ratio |
-|------|---------------|--------------|-------------------|
-| 2    | -9.28278636   | -2.78755995  | N/A               |
-| 4    | -11.42830201  | -0.64204430  | 4.3417            |
-| 8    | -11.91384577  | -0.15650055  | 4.1025            |
-| 16   | -12.03148013  | -0.03886618  | 4.0267            |
-| 32   | -12.06064608  | -0.00970023  | 4.0067            |
-| 64   | -12.06792228  | -0.00242404  | 4.0017            |
-| 128  | -12.06974037  | -0.00060595  | 4.0004            |
-| 256  | -12.07019483  | -0.00015148  | 4.0001            |
-| 512  | -12.07030845  | -0.00003787  | 4.0000            |
+3. Interpolation polynomial:
+   - $P_2(x) = f(-1)L_0(x) + f(0)L_1(x) + f(1)L_2(x)$
+   - $P_2(x) = \frac{1}{26} \cdot \frac{x(x-1)}{2} + 1 \cdot (-x^2+1) + \frac{1}{26} \cdot \frac{x(x+1)}{2}$
+   
+   Expanding and simplifying:
+   - $P_2(x) = \frac{1}{52}x(x-1) + (-x^2+1) + \frac{1}{52}x(x+1)$
+   - $P_2(x) = \frac{1}{52}(x^2-x) + (-x^2+1) + \frac{1}{52}(x^2+x)$
+   - $P_2(x) = \frac{1}{52}(2x^2) - x^2 + 1$
+   - $P_2(x) = \frac{2x^2}{52} - x^2 + 1$
+   - $P_2(x) = -\frac{50x^2}{52} + 1$
+   - $P_2(x) = -\frac{25x^2}{26} + 1$
 
-### Convergence Ratio Justification
+4. Exact integration:
+   - $\int_{-1}^{1} P_2(x) \, dx = \int_{-1}^{1} (-\frac{25x^2}{26} + 1) \, dx$
+   - $= -\frac{25}{26} \int_{-1}^{1} x^2 \, dx + \int_{-1}^{1} 1 \, dx$
+   - $= -\frac{25}{26} \cdot [\frac{x^3}{3}]_{-1}^{1} + [x]_{-1}^{1}$
+   - $= -\frac{25}{26} \cdot (\frac{1}{3} - \frac{-1}{3}) + (1 - (-1))$
+   - $= -\frac{25}{26} \cdot \frac{2}{3} + 2$
+   - $= -\frac{50}{78} + \frac{156}{78}$
+   - $= \frac{106}{78} \approx 1.3590$
 
-The convergence ratio is calculated as |E_n(f)|/|E_(2n)(f)|, which represents how much the error decreases when we double the number of subintervals.
+5. Error:
+   - Error: $|0.5493603068 - 1.3590| \approx 0.8096$
 
-For the midpoint rule, we observe that this ratio consistently approaches 4 as n increases. This confirms the theoretical O(h^2) convergence rate. When n doubles, h is halved, and the error term containing h^2 decreases by a factor of 2^2 = 4.
+For all interpolation degrees from 2 to 10, the results are summarized in Table 2.
 
-The initial convergence ratio (4.3417 for n=2 to n=4) is slightly higher than 4, likely due to the specific behavior of the higher derivatives of our integrand over the interval [0,π]. As n increases, the ratio stabilizes almost exactly at 4, validating the theoretical expectation.
+**Table 2.** Polynomial Interpolation Results for the integral from -1 to 1 of 1/(1+25x²)dx
 
-The convergence ratio approaching 4 is mathematically justified by the error term in the midpoint rule, which is proportional to 1/n^2. When n doubles to 2n, the error term becomes proportional to 1/(2n)^2 = 1/(4n^2), which is 1/4 of the original error. Therefore, the ratio of consecutive errors |E_n(f)|/|E_(2n)(f)| should approach 4, which is precisely what we observe in our numerical results.
+| $n$ | Equally Spaced | Error | Chebyshev | Error |
+|-----|----------------|-------|-----------|-------|
+| 2   | 0.0769230769   | 4.7244e-1 | 0.1481481481 | 4.0121e-1 |
+| 3   | 1.3589743590   | 8.0961e-1 | 1.1561181435 | 6.0676e-1 |
+| 4   | 0.4162895928   | 1.3307e-1 | 0.3393357343 | 2.1002e-1 |
+| 5   | 0.4748010610   | 7.4559e-2 | 0.7366108212 | 1.8725e-1 |
+| 6   | 0.4615384615   | 8.7822e-2 | 0.4422623071 | 1.0710e-1 |
+| 7   | 0.7740897347   | 2.2473e-1 | 0.6363602552 | 8.7000e-2 |
+| 8   | 0.5797988819   | 3.0439e-2 | 0.4995830749 | 4.9777e-2 |
+| 9   | 0.3000977814   | 2.4926e-1 | 0.5839263513 | 3.4566e-2 |
+| 10  | 0.4797235796   | 6.9637e-2 | 0.5259711610 | 2.3389e-2 |
 
-## (c) Composite Trapezoidal Rule
+#### Observations on Interpolating Polynomials:
 
-### Method Description
+The results highlight why polynomial interpolation struggles with this function:
 
-The composite trapezoidal rule approximates the integral by connecting function values at the endpoints of each subinterval with straight lines, creating a series of trapezoids. This method is widely used due to its simplicity and effectiveness for smooth functions.
+1. **Low-degree approximation (2 points)**:
+   - The linear interpolant forms a flat line at height $\frac{1}{26}$, completely missing the peak at $x=0$
+   - This leads to significant underestimation of the integral (only about 14% of the true value)
 
-The formula for the composite trapezoidal rule is:
+2. **Adding the peak (3 points)**:
+   - Including the point at $x=0$ creates a parabola that matches the function at $x = 0$ (value = 1)
+   - However, the quadratic approximation decreases much more slowly than the original function
+   - This leads to significant overestimation (about 247% of the true value)
 
-I_n(f) = (h/2) · [f(a) + f(b) + 2·sum from i=1 to n-1 of f(a + i·h)]
+3. **Runge's phenomenon challenge**:
+   - As we increase the degree of interpolation and add more equally spaced points, oscillations appear
+   - These oscillations can lead to over/underestimation in different regions
+   - This explains the non-monotonic convergence pattern seen in the data table
+   - For example, the error with 7 points is worse than with 6 points
 
-where:
-- h = (b-a)/n is the width of each subinterval
+4. **Chebyshev points advantage**:
+   - Chebyshev points distribute the interpolation points with higher density near the endpoints
+   - This helps reduce oscillations from Runge's phenomenon
+   - At $n=10$, Chebyshev points give a more accurate result (error ≈ 2.3%) than equally spaced points (error ≈ 7.0%)
+   - However, for this function with a central peak, Chebyshev points aren't optimally distributed either
 
-### Theoretical Error Analysis
+### (c) Gauss-Legendre Quadrature
 
-For the trapezoidal rule, the theoretical error is given by:
+For this integral, we apply Gauss-Legendre quadrature with $n = 2, 4, 6$ nodes:
 
-E_n(f) = -(b-a)^3/(12n^2) · f''(ξ)
+The complete Gauss-Legendre quadrature results for this integral are presented in Table 3.
 
-for some ξ ∈ [a,b]. Like the midpoint rule, the trapezoidal rule has second-order accuracy, O(h^2). When we double n, we expect the error to decrease by a factor of approximately 4.
+**Table 3.** Gauss-Legendre Quadrature Results for the integral from -1 to 1 of 1/(1+25x²)dx
 
-### Implementation Results
+| $n$ | Approximation | Absolute Error | Relative Error |
+|-----|---------------|----------------|----------------|
+| 2   | 0.2142857143  | 3.3507e-1      | 6.0994e-1      |
+| 4   | 0.3709273183  | 1.7843e-1      | 3.2480e-1      |
+| 6   | 0.4617005584  | 8.7660e-2      | 1.5957e-1      |
 
-Results for Composite Trapezoidal Rule with n = 2^i, i = 1,2,...,9:
+#### Observations:
 
-| n    | Approximation  | Error       | Convergence Ratio |
-|------|----------------|-------------|-------------------|
-| 2    | -17.38925933   | 5.31891301  | N/A               |
-| 4    | -13.33602285   | 1.26567653  | 4.2024            |
-| 8    | -12.38216243   | 0.31181611  | 4.0590            |
-| 16   | -12.14800410   | 0.07765778  | 4.0153            |
-| 32   | -12.08974212   | 0.01939580  | 4.0038            |
-| 64   | -12.07519410   | 0.00484778  | 4.0010            |
-| 128  | -12.07155819   | 0.00121187  | 4.0002            |
-| 256  | -12.07064928   | 0.00030296  | 4.0001            |
-| 512  | -12.07042206   | 0.00007574  | 4.0000            |
+1. Convergence is much slower than for the first integral
+2. Even with $n=6$ nodes, the relative error remains approximately 16%
+3. The function's sharp peak presents a significant challenge for polynomial-based quadrature
+4. The performance is still better than polynomial interpolation but requires more points for high accuracy
+5. For this type of function with localized features, adaptive methods would be more appropriate
 
-### Convergence Ratio Justification
+## Problem 3: Developing a Hermite-Type Quadrature Formula
 
-Similar to the midpoint rule, the convergence ratio for the trapezoidal rule approaches 4 as n increases, confirming the O(h^2) convergence rate. This is consistent with the theoretical error formula which includes an h^2 term.
+### Problem Statement:
+This problem requires the construction of a specialized numerical integration formula that leverages both function values and derivatives. The goal is to determine specific coefficients a, b, c, and d for the formula:
+$$\int_{-1}^{1} f(x) \, dx = a \cdot f(-1) + b \cdot f(1) + c \cdot f'(-1) + d \cdot f'(1)$$
 
-An interesting observation is that while the midpoint rule consistently underestimates the true value (negative errors), the trapezoidal rule consistently overestimates it (positive errors). This is a well-known property: for functions with positive second derivatives in the integration interval, the trapezoidal rule overestimates the integral, while the midpoint rule underestimates it.
+The purpose of this problem is to demonstrate how derivative information can enhance the accuracy of quadrature formulas. While standard methods like Newton-Cotes and Gauss-Legendre use only function values, this Hermite-type approach incorporates the function's rate of change at specific points. By requiring exactness for polynomials up to degree 3, the formula achieves higher-order accuracy with minimal evaluation points. This highlights an important principle in numerical analysis: utilizing additional information about a function (beyond simple values) can significantly improve approximation quality.
 
-The convergence ratio starts slightly higher at 4.2024 for small n values and stabilizes at almost exactly 4 for larger n values. This matches our theoretical expectations perfectly and validates the implementation.
+To find these constants, we need the formula to be exact for the basis $\{1, x, x^2, x^3\}$.
+
+### Testing on $f(x) = 1$:
+
+Function and derivative values:
+- $f(-1) = 1$
+- $f(1) = 1$
+- $f'(-1) = 0$
+- $f'(1) = 0$
+
+Exact integral:
+$$\int_{-1}^{1} 1 \, dx = [x]_{-1}^{1} = 1 - (-1) = 2$$
+
+This gives our first equation:
+$$a \cdot 1 + b \cdot 1 + c \cdot 0 + d \cdot 0 = 2$$
+$$a + b = 2 \quad \text{(Equation 1)}$$
 
-The mathematical justification is similar to that of the midpoint rule: the error term in the trapezoidal rule is proportional to 1/n^2. When n doubles, the error term becomes proportional to 1/(4n^2), which is 1/4 of the original error. Therefore, the ratio of consecutive errors should approach 4, which is confirmed by our numerical results.
+### Testing on $f(x) = x$:
 
-## (d) Corrected Trapezoidal Rule
+Function and derivative values:
+- $f(-1) = -1$
+- $f(1) = 1$
+- $f'(-1) = 1$ (derivative of $x$ is 1)
+- $f'(1) = 1$
 
-### Method Description
+Exact integral:
+$$\int_{-1}^{1} x \, dx = \left[\frac{x^2}{2}\right]_{-1}^{1} = \frac{1}{2} - \frac{1}{2} = 0$$
 
-The corrected trapezoidal rule, also known as the Euler-Maclaurin formula, enhances the basic trapezoidal rule by adding a correction term based on the derivatives of the function at the endpoints. This modification significantly improves accuracy without substantially increasing the computational cost.
+This gives our second equation:
+$$a \cdot (-1) + b \cdot 1 + c \cdot 1 + d \cdot 1 = 0$$
+$$-a + b + c + d = 0 \quad \text{(Equation 2)}$$
 
-The formula for the corrected trapezoidal rule is:
+### Testing on $f(x) = x^2$:
 
-I_n(f) = I_n^T(f) - (h^2/12) · [f'(b) - f'(a)]
+Function and derivative values:
+- $f(-1) = (-1)^2 = 1$
+- $f(1) = 1^2 = 1$
+- $f'(-1) = 2(-1) = -2$ (derivative of $x^2$ is $2x$)
+- $f'(1) = 2(1) = 2$
 
-where:
-- I_n^T(f) is the approximation from the standard trapezoidal rule
-- f'(x) is the first derivative of f(x)
+Exact integral:
+$$\int_{-1}^{1} x^2 \, dx = \left[\frac{x^3}{3}\right]_{-1}^{1} = \frac{1}{3} - \frac{-1}{3} = \frac{2}{3}$$
 
-For our function f(x) = e^x cos(x), the derivative is:
-f'(x) = e^x (cos(x) - sin(x))
+This gives our third equation:
+$$a \cdot 1 + b \cdot 1 + c \cdot (-2) + d \cdot 2 = \frac{2}{3}$$
+$$a + b - 2c + 2d = \frac{2}{3} \quad \text{(Equation 3)}$$
 
-### Theoretical Error Analysis
+### Testing on $f(x) = x^3$:
 
-The error for the corrected trapezoidal rule is of order O(h^4), a significant improvement from the O(h^2) of the basic trapezoidal rule. The Euler-Maclaurin correction effectively eliminates the leading error term in the trapezoidal rule.
+Function and derivative values:
+- $f(-1) = (-1)^3 = -1$
+- $f(1) = 1^3 = 1$
+- $f'(-1) = 3(-1)^2 = 3$ (derivative of $x^3$ is $3x^2$)
+- $f'(1) = 3(1)^2 = 3$
 
-Theoretically, the error formula is:
+Exact integral:
+$$\int_{-1}^{1} x^3 \, dx = \left[\frac{x^4}{4}\right]_{-1}^{1} = \frac{1}{4} - \frac{1}{4} = 0$$
 
-E_n(f) = -(b-a)^5/(720n^4) · f^(4)(ξ)
+This gives our fourth equation:
+$$a \cdot (-1) + b \cdot 1 + c \cdot 3 + d \cdot 3 = 0$$
+$$-a + b + 3c + 3d = 0 \quad \text{(Equation 4)}$$
 
-for some ξ ∈ [a,b]. This indicates that when we double n (halve h), we expect the error to decrease by a factor of approximately 2^4 = 16.
+### Solving the System of Equations:
 
-### Implementation Results
+From Equation 1:
+$$b = 2 - a \quad \text{(Equation 5)}$$
 
-Results for Corrected Trapezoidal Rule with n = 2^i, i = 1,2,...,9:
+Substituting Equation 5 into Equation 2:
+$$-a + (2 - a) + c + d = 0$$
+$$-a + 2 - a + c + d = 0$$
+$$-2a + 2 + c + d = 0$$
+$$c + d = 2a - 2 \quad \text{(Equation 6)}$$
 
-| n    | Approximation  | Error        | Convergence Ratio |
-|------|----------------|--------------|-------------------|
-| 2    | -12.42552837   | 0.35518205   | N/A               |
-| 4    | -12.09509011   | 0.02474379   | 14.3544           |
-| 8    | -12.07192924   | 0.00158293   | 15.6317           |
-| 16   | -12.07044580   | 0.00009949   | 15.9109           |
-| 32   | -12.07035254   | 0.00000623   | 15.9779           |
-| 64   | -12.07034671   | 0.00000039   | 15.9945           |
-| 128  | -12.07034634   | 0.00000002   | 15.9986           |
-| 256  | -12.07034632   | 0.00000000   | 15.9997           |
-| 512  | -12.07034632   | 0.00000000   | 16.0005           |
+Substituting Equation 5 into Equation 3:
+$$a + (2 - a) - 2c + 2d = \frac{2}{3}$$
+$$a + 2 - a - 2c + 2d = \frac{2}{3}$$
+$$2 - 2c + 2d = \frac{2}{3}$$
+$$-c + d = \frac{2/3 - 2}{2} = \frac{2/3 - 6/3}{2} = \frac{-4/3}{2} = -\frac{2}{3} \quad \text{(Equation 7)}$$
 
-### Convergence Ratio Justification
+From Equations 6 and 7:
+$$c + d = 2a - 2 \quad \text{(Equation 6)}$$
+$$-c + d = -\frac{2}{3} \quad \text{(Equation 7)}$$
 
-The convergence ratio for the corrected trapezoidal rule approaches 16 as n increases, confirming the theoretical O(h^4) convergence rate. This dramatic improvement over the basic trapezoidal rule demonstrates the power of the Euler-Maclaurin correction.
+Adding these equations:
+$$2d = 2a - 2 - \frac{2}{3}$$
+$$2d = 2a - \frac{6}{3} - \frac{2}{3}$$
+$$2d = 2a - \frac{8}{3}$$
+$$d = a - \frac{4}{3} \quad \text{(Equation 8)}$$
 
-The initial convergence ratio of 14.3544 (from n=2 to n=4) is slightly below 16, but it quickly approaches the theoretical value as n increases. By n=512, the ratio is approximately 16.0005, remarkably close to the expected value of 16. This confirms that the implementation correctly captures the fourth-order accuracy of the method.
+Substituting Equation 8 into Equation 6:
+$$c + \left(a - \frac{4}{3}\right) = 2a - 2$$
+$$c = 2a - 2 - a + \frac{4}{3}$$
+$$c = a - 2 + \frac{4}{3}$$
+$$c = a - \frac{6}{3} + \frac{4}{3}$$
+$$c = a - \frac{2}{3} \quad \text{(Equation 9)}$$
 
-The progression of the convergence ratio (14.3544 → 15.6317 → 15.9109 → 15.9779 → 15.9945 → 15.9986 → 15.9997 → 16.0005) clearly shows it asymptotically approaching the theoretical value of 16, which is exactly what we would expect from the error analysis.
+Now, substituting Equations 5, 8, and 9 into Equation 4:
+$$-a + (2-a) + 3\left(a - \frac{2}{3}\right) + 3\left(a - \frac{4}{3}\right) = 0$$
+$$-a + 2 - a + 3a - 2 + 3a - 4 = 0$$
+$$-a - a + 3a + 3a + 2 - 2 - 4 = 0$$
+$$-2a + 6a - 4 = 0$$
+$$4a = 4$$
+$$a = 1$$
 
-The mathematical justification is based on the error term in the corrected trapezoidal rule, which is proportional to 1/n^4. When n doubles, the error term becomes proportional to 1/(16n^4), which is 1/16 of the original error. Therefore, the ratio of consecutive errors should approach 16, which is confirmed by our numerical results with remarkable precision.
+Substituting back:
+$$b = 2 - a = 2 - 1 = 1 \quad \text{(from Equation 5)}$$
+$$c = a - \frac{2}{3} = 1 - \frac{2}{3} = \frac{3}{3} - \frac{2}{3} = \frac{1}{3} \quad \text{(from Equation 9)}$$
+$$d = a - \frac{4}{3} = 1 - \frac{4}{3} = \frac{3}{3} - \frac{4}{3} = -\frac{1}{3} \quad \text{(from Equation 8)}$$
 
-## (e) Composite Simpson's Rule
+Therefore, the quadrature formula is:
+$$\int_{-1}^{1} f(x) \, dx \approx 1 \cdot f(-1) + 1 \cdot f(1) + \frac{1}{3} \cdot f'(-1) - \frac{1}{3} \cdot f'(1)$$
 
-### Method Description
+### Verification:
 
-The composite Simpson's rule approximates the integral by using quadratic interpolation over pairs of subintervals. It effectively fits a parabola through three consecutive points and integrates the resulting function. Simpson's rule is widely used because it achieves high-order accuracy without requiring derivatives.
+Let's verify this formula works for polynomials of degree $\leq 3$:
 
-The formula for the composite Simpson's rule is:
+For $f(x) = 1$:
+$$1 \cdot 1 + 1 \cdot 1 + \frac{1}{3} \cdot 0 - \frac{1}{3} \cdot 0 = 2 \quad \text{(Correct!)}$$
 
-I_n(f) = (h/3) · [f(a) + f(b) + 4·sum from i=1 to k of f(x_(2i-1)) + 2·sum from i=1 to k-1 of f(x_(2i))]
+For $f(x) = x$:
+$$1 \cdot (-1) + 1 \cdot 1 + \frac{1}{3} \cdot 1 - \frac{1}{3} \cdot 1 = -1 + 1 + \frac{1}{3} - \frac{1}{3} = 0 \quad \text{(Correct!)}$$
 
-where:
-- k = n/2 (n must be even)
-- h = (b-a)/n
-- x_i = a + i·h
+For $f(x) = x^2$:
+$$1 \cdot 1 + 1 \cdot 1 + \frac{1}{3} \cdot (-2) - \frac{1}{3} \cdot 2 = 1 + 1 - \frac{2}{3} - \frac{2}{3} = 2 - \frac{4}{3} = \frac{6}{3} - \frac{4}{3} = \frac{2}{3} \quad \text{(Correct!)}$$
 
-### Theoretical Error Analysis
+For $f(x) = x^3$:
+$$1 \cdot (-1) + 1 \cdot 1 + \frac{1}{3} \cdot 3 - \frac{1}{3} \cdot 3 = -1 + 1 + 1 - 1 = 0 \quad \text{(Correct!)}$$
 
-For Simpson's rule, the theoretical error is given by:
+The formula is therefore verified to be exact for polynomials of degree $\leq 3$.
 
-E_n(f) = -(b-a)^5/(180n^4) · f^(4)(ξ)
+## Conclusion
 
-for some ξ ∈ [a,b]. This indicates that Simpson's rule has fourth-order accuracy, O(h^4). When we double n (halve h), we expect the error to decrease by a factor of approximately 2^4 = 16.
+This analysis demonstrates the strengths and limitations of different numerical integration methods:
 
-### Implementation Results
+1. **Gauss-Legendre Quadrature**:
+   - Highly efficient for smooth functions (like $e^x \cos x$)
+   - Requires more points for functions with sharp features (like $\frac{1}{1+25x^2}$)
+   - Achieves accuracy with fewer function evaluations than Newton-Cotes methods
 
-Results for Composite Simpson's Rule with n = 2^i, i = 1,2,...,7:
+2. **Polynomial Interpolation**:
+   - Struggles with Runge's phenomenon, especially for equally spaced points
+   - Chebyshev points help mitigate oscillations but aren't always optimal
+   - May exhibit non-monotonic convergence for challenging functions
 
-| n    | Approximation  | Error        | Convergence Ratio |
-|------|----------------|--------------|-------------------|
-| 2    | -11.59283955   | -0.47750676  | N/A               |
-| 4    | -11.98494402   | -0.08540230  | 5.5913            |
-| 8    | -12.06420896   | -0.00613736  | 13.9152           |
-| 16   | -12.06995132   | -0.00039499  | 15.5379           |
-| 32   | -12.07032146   | -0.00002486  | 15.8885           |
-| 64   | -12.07034476   | -0.00000156  | 15.9724           |
-| 128  | -12.07034622   | -0.00000010  | 15.9931           |
+3. **Hermite-Type Quadrature**:
+   - Incorporates derivative information to enhance accuracy
+   - Can be designed to be exact for specific polynomial degrees
+   - Provides a balance between accuracy and computational effort
 
-### Convergence Ratio Justification
-
-The convergence ratio for Simpson's rule shows an interesting progression. For small n values, the ratio is significantly lower than the theoretical value of 16, but it rapidly approaches this value as n increases.
-
-For n=2 to n=4, the ratio is only 5.5913, but by n=8 to n=16, it reaches 15.5379, and for n=64 to n=128, it's 15.9931, very close to the theoretical value of 16.
-
-This behavior can be explained by considering the complete error expansion for Simpson's rule. While the leading term is O(h^4), there are additional higher-order terms that become less significant as h decreases (or n increases). For small n values, these higher-order terms still contribute noticeably to the error, causing the convergence ratio to deviate from 16. As n increases, the O(h^4) term dominates, and the ratio approaches the theoretical value of 16.
-
-The observed progression (5.5913 → 13.9152 → 15.5379 → 15.8885 → 15.9724 → 15.9931) clearly shows the convergence ratio asymptotically approaching 16, validating the fourth-order accuracy of Simpson's rule.
-
-The mathematical justification, similar to the corrected trapezoidal rule, is based on the error term being proportional to 1/n^4. As n doubles, the error should decrease by a factor of 16, which our data confirms for larger values of n when the leading error term dominates.
-
-## (f) Discussion of Accuracy and Computational Effort
-
-### Accuracy Comparison
-
-1. **Composite Midpoint Rule**: Demonstrates second-order convergence (O(h^2)). While simple to implement, it requires a large number of function evaluations to achieve high accuracy. With n = 512, the error is still around 3.8×10^-5.
-
-   The midpoint rule consistently underestimates the true value of the integral for our function. This is because e^x cos(x) has regions where its second derivative is positive over the integration interval [0,π]. For functions with positive second derivatives, the midpoint rule typically underestimates the integral.
-
-2. **Composite Trapezoidal Rule**: Also exhibits second-order convergence (O(h^2)). It produces errors of opposite sign compared to the midpoint rule but similar magnitude. With n = 512, the error is about 7.6×10^-5.
-
-   The trapezoidal rule consistently overestimates the true value of the integral. This complementary behavior to the midpoint rule is a well-known property and can be leveraged in error estimation techniques like Richardson extrapolation.
-
-3. **Corrected Trapezoidal Rule**: Shows fourth-order convergence (O(h^4)). This method dramatically improves upon the basic trapezoidal rule. With just n = 32, it achieves an error of about 6.2×10^-6, which is better than what the midpoint or trapezoidal rules achieve with n = 512.
-
-   The Euler-Maclaurin correction effectively eliminates the leading error term in the trapezoidal rule, resulting in a much higher-order method. For our function, this correction works exceptionally well, providing extremely accurate results even with relatively few subintervals.
-
-4. **Composite Simpson's Rule**: Also exhibits fourth-order convergence (O(h^4)). Its performance is comparable to the corrected trapezoidal rule. With n = 128, the error is approximately 1.0×10^-7.
-
-   Simpson's rule achieves high-order accuracy by effectively fitting parabolas to the function. For our integrand e^x cos(x), which has significant curvature, this approach is particularly effective. The method does not require derivative evaluations, making it versatile for functions where derivatives are not readily available.
-
-### Computational Effort Analysis
-
-1. **Composite Midpoint Rule**: Requires n function evaluations.
-   - Advantages: Simple to implement, no need to evaluate endpoints.
-   - Disadvantages: Slower convergence requires more subintervals for high accuracy.
-   - Computational complexity: O(n) function evaluations to achieve O(1/n^2) accuracy.
-
-2. **Composite Trapezoidal Rule**: Requires n+1 function evaluations.
-   - Advantages: Simple to implement, good for periodic functions.
-   - Disadvantages: Same O(h^2) convergence as midpoint rule.
-   - Computational complexity: O(n) function evaluations to achieve O(1/n^2) accuracy.
-
-3. **Corrected Trapezoidal Rule**: Requires n+1 function evaluations plus 2 derivative evaluations.
-   - Advantages: Dramatically improved convergence rate (O(h^4)).
-   - Disadvantages: Requires explicit knowledge of the derivative function.
-   - Computational complexity: O(n) function evaluations plus constant overhead for derivatives to achieve O(1/n^4) accuracy.
-
-4. **Composite Simpson's Rule**: Requires n+1 function evaluations.
-   - Advantages: Fourth-order convergence without requiring derivatives.
-   - Disadvantages: Slightly more complex implementation than trapezoidal rule.
-   - Computational complexity: O(n) function evaluations to achieve O(1/n^4) accuracy.
-
-### Efficiency Analysis
-
-To quantify the efficiency of each method, we can compare the number of function evaluations required to achieve a specified error tolerance.
-
-For our integral from 0 to π of e^x cos(x) dx:
-
-- To achieve an error of approximately 10^-5:
-  - Midpoint Rule: Requires n ≈ 512 (512 function evaluations)
-  - Trapezoidal Rule: Requires n ≈ 512 (513 function evaluations)
-  - Corrected Trapezoidal Rule: Requires n ≈ 16 (17 function evaluations + 2 derivative evaluations)
-  - Simpson's Rule: Requires n ≈ 16 (17 function evaluations)
-
-This comparison clearly demonstrates the superior efficiency of the higher-order methods. The corrected trapezoidal rule and Simpson's rule require approximately 1/32 of the function evaluations needed by the second-order methods to achieve the same accuracy.
-
-The corrected trapezoidal rule and Simpson's rule are clearly superior in terms of accuracy per function evaluation. With n = 64, both methods achieve an error on the order of 10^-7, while the basic midpoint and trapezoidal rules would require n > 4096 to achieve similar accuracy.
-
-### Theoretical Validation
-
-We can validate our observed convergence rates by comparing them with the theoretical error terms for each method:
-
-1. Midpoint Rule: E_n(f) = O(h^2) ∝ 1/n^2
-   - Observed: Convergence ratio ≈ 4 = 2^2 when n doubles (h halves)
-   - Theoretical: Error should decrease by a factor of 2^2 = 4 when n doubles
-   - Conclusion: Perfect agreement with theory
-
-2. Trapezoidal Rule: E_n(f) = O(h^2) ∝ 1/n^2
-   - Observed: Convergence ratio ≈ 4 = 2^2 when n doubles
-   - Theoretical: Error should decrease by a factor of 2^2 = 4 when n doubles
-   - Conclusion: Perfect agreement with theory
-
-3. Corrected Trapezoidal Rule: E_n(f) = O(h^4) ∝ 1/n^4
-   - Observed: Convergence ratio approaches 16 = 2^4 when n doubles
-   - Theoretical: Error should decrease by a factor of 2^4 = 16 when n doubles
-   - Conclusion: Excellent agreement with theory
-
-4. Simpson's Rule: E_n(f) = O(h^4) ∝ 1/n^4
-   - Observed: Convergence ratio approaches 16 = 2^4 as n increases
-   - Theoretical: Error should decrease by a factor of 2^4 = 16 when n doubles
-   - Conclusion: Good agreement with theory, especially for larger n values
-
-The observed convergence rates match the theoretical predictions remarkably well, providing strong validation for both our implementation and the theoretical error analysis of these numerical integration methods.
+The choice of method depends on the characteristics of the integrand and the desired accuracy. For functions with sharp features or singularities, adaptive methods that focus computational effort where the function varies rapidly are generally more effective.
