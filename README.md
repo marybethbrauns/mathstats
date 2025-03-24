@@ -1,367 +1,552 @@
+# Numerical Analysis Homework | Marybeth Brauns
 
-///
-
-///
-
-///
-
-///
-
-///
-
-///
-
-///
-
-///
-
-///
-
-//
-
-///
-
-///
-
-
-
-///
-
-///
-
-///
-
-///
-
-///
-
-
-
-
-# Numerical Analysis Homework #6
-
-## Problem 1: Evaluating $\int_{0}^{\pi} e^x \cos x\,dx$
+## Problem 1: Evaluating \(\displaystyle \int_{0}^{\pi} e^x \cos x\,dx\)
 
 ### Problem Statement
 
 Evaluate the integral
-$$I(f)=\int_{0}^{\pi} e^x \cos x\,dx$$
+
+\[
+I(f)=\int_{0}^{\pi} e^x \cos x\,dx
+\]
 
 using the following approaches:
 
 1. **(a) Analytical Evaluation:** Use the Fundamental Theorem of Calculus (via integration by parts) to obtain an exact result.
-2. **(b) Gauss–Legendre Quadrature:** Approximate the integral using Gauss–Legendre quadrature for $n=2,3,4,5,6$ nodes. Compute the approximations $I_n(f)$ and the corresponding errors $E_n(f)$.
+2. **(b) Gauss–Legendre Quadrature:** Approximate the integral using Gauss–Legendre quadrature for \(n=2,3,4,5,6\) nodes. Compute the approximations \(I_n(f)\) and the corresponding errors \(E_n(f)\).
 3. **(c) Discussion:** Discuss the accuracy of Gauss–Legendre quadrature in comparison to Newton–Cotes formulas and comment on the computational effort involved.
 
 ### (a) Analytical Evaluation
 
-To evaluate the integral $I(f)=\int_{0}^{\pi} e^x \cos x\,dx$, we'll use integration by parts twice.
+To evaluate
+\[
+I(f)=\int_{0}^{\pi} e^x \cos x\,dx,
+\]
+we use integration by parts twice.
 
-First integration by parts with $u = e^x$ and $dv = \cos x\,dx$:
-- $du = e^x\,dx$
-- $v = \sin x$
+1. **First integration by parts:**  
+   Let
+   - \(u = e^x\)  so \(du = e^x\,dx\),
+   - \(dv = \cos x\,dx\)  so \(v = \sin x\).
 
-This gives us:
-$$\int e^x\cos x\,dx = e^x \sin x - \int e^x \sin x\,dx$$
+   Then,
+   \[
+   \int e^x\cos x\,dx = e^x \sin x - \int e^x \sin x\,dx.
+   \]
 
-For the remaining integral, we apply integration by parts again with $u = e^x$ and $dv = \sin x\,dx$:
-- $du = e^x\,dx$
-- $v = -\cos x$
+2. **Second integration by parts:**  
+   For the remaining integral, let
+   - \(u = e^x\)  so \(du = e^x\,dx\),
+   - \(dv = \sin x\,dx\)  so \(v = -\cos x\).
 
-This gives us:
-$$\int e^x \sin x\,dx = -e^x\cos x + \int e^x\cos x\,dx$$
+   Then,
+   \[
+   \int e^x \sin x\,dx = -e^x\cos x + \int e^x\cos x\,dx.
+   \]
 
-Substituting this result back into our first equation:
-$$\int e^x\cos x\,dx = e^x \sin x - \left(-e^x\cos x + \int e^x\cos x\,dx\right)$$
+Substitute the second result back into the first:
+\[
+\begin{aligned}
+\int e^x\cos x\,dx &= e^x \sin x - \Bigl(-e^x\cos x + \int e^x\cos x\,dx\Bigr)\\[1mm]
+&= e^x (\sin x + \cos x) - \int e^x\cos x\,dx.
+\end{aligned}
+\]
 
-Simplifying:
-$$\int e^x\cos x\,dx = e^x (\sin x + \cos x) - \int e^x\cos x\,dx$$
+Adding \(\int e^x\cos x\,dx\) to both sides:
+\[
+2\int e^x\cos x\,dx = e^x (\sin x + \cos x),
+\]
+so that
+\[
+\int e^x\cos x\,dx = \frac{e^x (\sin x + \cos x)}{2}.
+\]
 
-Adding $\int e^x\cos x\,dx$ to both sides:
-$$2\int e^x\cos x\,dx = e^x (\sin x + \cos x)$$
-
-Therefore:
-$$\int e^x\cos x\,dx = \frac{e^x (\sin x + \cos x)}{2}$$
-
-Now, evaluating the definite integral:
-$$I(f)=\left[\frac{e^x (\sin x + \cos x)}{2}\right]_0^{\pi}$$
+Now evaluate the definite integral:
+\[
+I(f)=\left[\frac{e^x (\sin x + \cos x)}{2}\right]_0^{\pi}.
+\]
 
 At the limits:
-- At $x=\pi$: $\sin \pi=0$ and $\cos \pi=-1$, giving $\frac{e^\pi (0-1)}{2} = -\frac{e^\pi}{2}$
-- At $x=0$: $\sin 0=0$ and $\cos 0=1$, giving $\frac{e^0(0+1)}{2} = \frac{1}{2}$
 
-Therefore:
-$$I(f) = -\frac{e^\pi}{2} - \frac{1}{2} = -\frac{e^\pi+1}{2}$$
+- **At \(x=\pi\):**  
+  \(\sin \pi=0\) and \(\cos \pi=-1\) so
+  \[
+  \frac{e^\pi (0-1)}{2} = -\frac{e^\pi}{2}.
+  \]
+- **At \(x=0\):**  
+  \(\sin 0=0\) and \(\cos 0=1\) so
+  \[
+  \frac{e^0 (0+1)}{2} = \frac{1}{2}.
+  \]
 
-Numerically, with $e^\pi \approx 23.1407$:
-$$I(f) \approx -\frac{24.1407}{2} \approx -12.07035$$
+Thus,
+\[
+I(f) = \left(-\frac{e^\pi}{2}\right) - \frac{1}{2} = -\frac{e^\pi+1}{2}.
+\]
+
+Numerically, with \(e^\pi \approx 23.1407\),
+\[
+I(f) \approx -\frac{24.1407}{2} \approx -12.07035.
+\]
+
+**Observations on the Analytical Solution:**
+- Integration by parts neatly handles the combination of exponential and trigonometric functions.
+- The large magnitude arises due to the factor \(e^\pi\).
+- This exact value serves as our benchmark for assessing numerical approximations.
+
+---
 
 ### (b) Gauss–Legendre Quadrature
 
-To apply Gauss–Legendre quadrature, we need to transform the integration interval from $[0,\pi]$ to $[-1,1]$ using the substitution:
+To apply Gauss–Legendre quadrature on the interval \([0,\pi]\), we transform the interval to \([-1,1]\) by letting
 
-$$x = \frac{\pi}{2}(t+1), \quad dx = \frac{\pi}{2}\,dt$$
+\[
+x = \frac{\pi}{2}(t+1), \quad dx = \frac{\pi}{2}\,dt.
+\]
 
-The transformed integrand becomes:
-$$f(t)=\frac{\pi}{2}\,e^{\frac{\pi}{2}(t+1)}\cos\left(\frac{\pi}{2}(t+1)\right)$$
+The transformed integrand becomes
 
-The $n$-point Gauss-Legendre quadrature approximation is:
-$$I_n(f)=\sum_{i=1}^{n} w_i\,f(t_i)$$
+\[
+f(t)=\frac{\pi}{2}\,e^{\frac{\pi}{2}(t+1)}\cos\!\Bigl(\frac{\pi}{2}(t+1)\Bigr).
+\]
 
-where $t_i$ are the nodes and $w_i$ are the corresponding weights.
+The \(n\)-point Gauss–Legendre quadrature approximation is given by
 
-**Results for different values of $n$:**
+\[
+I_n(f)=\sum_{i=1}^{n} w_i\,f(t_i),
+\]
 
-| $n$ | $I_n(f)$ | Error $E_n(f)$ |
-|-----|-----------|----------------|
-| 2   | -12.33621047 | $2.66\times10^{-1}$ |
-| 3   | -12.12742045 | $5.71\times10^{-2}$ |
-| 4   | -12.07018949 | $1.57\times10^{-4}$ |
-| 5   | -12.07032854 | $1.78\times10^{-5}$ |
-| 6   | -12.07034633 | $1.47\times10^{-8}$ |
+where the \(t_i\) are the nodes and \(w_i\) the corresponding weights.
+
+**Results for different values of \(n\):**
+
+| \(n\) | \(I_n(f)\)      | Absolute Error       | Relative Error |
+|:-----:|:---------------:|:--------------------:|:--------------:|
+| 2     | \(-12.33621047\)| \(2.66\times10^{-1}\)| 2.20%          |
+| 3     | \(-12.12742045\)| \(5.71\times10^{-2}\)| 0.47%          |
+| 4     | \(-12.07018949\)| \(1.57\times10^{-4}\)| 0.0013%        |
+| 5     | \(-12.07032854\)| \(1.78\times10^{-5}\)| 0.00015%       |
+| 6     | \(-12.07034633\)| \(1.47\times10^{-8}\)| 0.00000012%    |
+
+**Observations on Gauss–Legendre Convergence:**
+- The error decreases by roughly one to two orders of magnitude with each additional node.
+- With \(n=4\) nodes, about 4–5 significant digits of accuracy are achieved.
+- The rapid (exponential) convergence is typical for analytic integrands such as \(e^x\cos x\).
+
+---
 
 ### (c) Discussion
 
-The Gauss–Legendre quadrature method demonstrates impressive efficiency for this integral:
+The Gauss–Legendre quadrature method demonstrates impressive efficiency:
 
-- **Rapid convergence:** The error drops dramatically from $2.66\times10^{-1}$ with just 2 nodes to $1.47\times10^{-8}$ with 6 nodes. This exponential error reduction is characteristic of Gauss quadrature for smooth functions.
+- **Rapid Convergence:** The error drops from roughly \(2.66\times10^{-1}\) (with 2 nodes) to \(1.47\times10^{-8}\) (with 6 nodes).
+- **Comparison with Newton–Cotes:** For this problem, methods using equally spaced nodes (e.g., Simpson's or Boole's rule) would require many more subintervals to reach the same accuracy.
+- **Computational Efficiency:** Although Gauss–Legendre requires precomputed nodes and weights, its optimal node placement leads to a high degree of precision with few function evaluations.
+- **Error Behavior:** The error is tied to the \((2n)\)th derivative of the integrand; for our smooth function, this produces an exponential error decrease.
+- **Handling Challenging Integrands:** Even though \(e^x\cos x\) combines exponential growth with oscillations, Gauss–Legendre quadrature captures the behavior extremely well.
 
-- **Comparison with Newton-Cotes:** Newton–Cotes formulas (which use evenly spaced nodes) would require significantly more function evaluations to achieve similar accuracy. This is because Gauss-Legendre positions its nodes optimally to maximize accuracy.
+---
 
-- **Computational efficiency:** While Gauss–Legendre quadrature requires special nodes and weights, these can be precomputed and tabulated. For well-behaved functions like $e^x\cos(x)$, the method achieves high precision with minimal computational effort.
-
-- **Error behavior:** The errors follow a pattern consistent with the theoretical error bound for Gauss-Legendre quadrature, which is proportional to the $(2n)$th derivative of the function for $n$ nodes.
-
-## Problem 2: Integration of $\int_{-1}^{1}\frac{1}{1+25x^2}\,dx$
+## Problem 2: Integration of \(\displaystyle \int_{-1}^{1}\frac{1}{1+25x^2}\,dx\)
 
 ### Problem Statement
 
-(a) **Analytical Evaluation:** Evaluate the integral $\int_{-1}^{1}\frac{1}{1+25x^2}\,dx$ using the Fundamental Theorem of Calculus.
+(a) **Analytical Evaluation:** Evaluate
 
-(b) **Global Polynomial Interpolation via Newton's Divided Differences:** Approximate the integral by exactly integrating two interpolating polynomials:
-   - A linear polynomial (using 2 nodes)
-   - A quadratic polynomial (using 3 nodes)
+\[
+\int_{-1}^{1}\frac{1}{1+25x^2}\,dx
+\]
 
-(c) **Gauss–Legendre Quadrature:** Approximate the same integral using Gauss–Legendre quadrature with $n=2$, $4$, and $6$ node-point formulas.
+using the Fundamental Theorem of Calculus.
+
+(b) **Global Polynomial Interpolation via Newton's Divided Differences:** Approximate the integral by exactly integrating the interpolating polynomial using:
+   - A linear polynomial (2 nodes),
+   - A quadratic polynomial (3 nodes),
+   - A quartic polynomial (5 nodes).
+
+(c) **Gauss–Legendre Quadrature:** Approximate the same integral using Gauss–Legendre quadrature with 2, 4, and 6 nodes.
 
 ### (a) Analytical Evaluation
 
-We use the substitution $u = 5x$ to simplify the integral:
-- $u = 5x$
-- $du = 5\,dx$
-- $dx = \frac{du}{5}$
+Let \(u = 5x\); then \(du = 5\,dx\) or \(dx = \frac{du}{5}\). Changing limits:
 
-This transforms our integral:
-$$\int_{-1}^{1} \frac{1}{1+25x^2}\,dx = \int_{-5}^{5} \frac{1}{5} \cdot \frac{1}{1+u^2}\,du = \frac{1}{5}\int_{-5}^{5} \frac{1}{1+u^2}\,du$$
+- When \(x=-1\), \(u=-5\); when \(x=1\), \(u=5\).
 
-The standard form $\int \frac{1}{1+u^2}\,du = \arctan(u) + C$ gives us:
-$$\int_{-1}^{1}\frac{1}{1+25x^2}\,dx = \frac{1}{5}\left[\arctan(u)\right]_{-5}^{5} = \frac{1}{5}[\arctan(5) - \arctan(-5)]$$
+Thus, the integral becomes
 
-Since $\arctan(-x) = -\arctan(x)$, we get:
-$$\int_{-1}^{1}\frac{1}{1+25x^2}\,dx = \frac{1}{5}[\arctan(5) - (-\arctan(5))] = \frac{2}{5}\arctan(5)$$
+\[
+\begin{aligned}
+\int_{-1}^{1} \frac{1}{1+25x^2}\,dx 
+&= \int_{-5}^{5} \frac{1}{1+u^2}\cdot\frac{du}{5} \\
+&= \frac{1}{5}\int_{-5}^{5} \frac{du}{1+u^2}.
+\end{aligned}
+\]
 
-Numerically, with $\arctan(5) \approx 1.3734$:
-$$\frac{2}{5}\arctan(5) \approx 0.54936$$
+Since
+
+\[
+\int \frac{du}{1+u^2} = \arctan u + C,
+\]
+
+we have
+
+\[
+\int_{-1}^{1}\frac{1}{1+25x^2}\,dx = \frac{1}{5}\Bigl[\arctan(5)-\arctan(-5)\Bigr] = \frac{2}{5}\arctan(5).
+\]
+
+Numerically, with \(\arctan(5)\approx 1.3734\),
+\[
+\frac{2}{5}\arctan(5) \approx 0.54936.
+\]
+
+**Observations:**
+- The substitution reduces the integral to a standard arctangent form.
+- The denominator’s large coefficient (25) causes a sharp peak at \(x=0\) and very small values at \(x=\pm1\).
+
+---
 
 ### (b) Integration via Newton's Divided Difference Interpolating Polynomials
 
-This approach uses Newton's divided difference method to construct interpolating polynomials that are then integrated exactly.
+This method constructs an interpolating polynomial from the function values at selected nodes and then integrates that polynomial exactly.
 
 #### Global 2-Point (Linear) Interpolation
 
-Using nodes $x_0 = -1$ and $x_1 = 1$, with function values:
-- $f(-1) = \frac{1}{1+25(-1)^2} = \frac{1}{26}$
-- $f(1) = \frac{1}{1+25(1)^2} = \frac{1}{26}$
+**Nodes:** \(x_0 = -1\) and \(x_1 = 1\)
 
-First, we construct the Newton's divided difference polynomial:
+**Function values:**
+\[
+f(-1)=\frac{1}{1+25}=\frac{1}{26},\quad f(1)=\frac{1}{26}.
+\]
 
-1. Zeroth divided difference: $f[x_0] = f(-1) = \frac{1}{26}$
+Since both values are equal, the linear (first–degree) interpolant is the constant function
 
-2. First divided difference:
-   $$f[x_0,x_1] = \frac{f(1) - f(-1)}{1-(-1)} = \frac{\frac{1}{26} - \frac{1}{26}}{2} = 0$$
+\[
+P_1(x) = \frac{1}{26}.
+\]
 
-3. The linear interpolation polynomial in Newton form:
-P₁(x) = f[x₀] + f[x₀,x₁](x + 1) = 1/26 + 0 · (x + 1) = 1/26
+**Integration:**
+\[
+\int_{-1}^{1} P_1(x)\,dx = \frac{1}{26}\cdot(1-(-1))=\frac{2}{26}=\frac{1}{13}\approx 0.07692.
+\]
 
+*Observations:*  
+This approximation captures only about 14% of the true area because the two endpoints miss the central peak.
 
-Integrating this constant polynomial:
-$$\int_{-1}^{1} P_1(x)\,dx = \frac{1}{26} \cdot (1-(-1)) = \frac{2}{26} = \frac{1}{13} \approx 0.07692$$
-
-This value significantly underestimates the true integral (0.54936) because the constant interpolant fails to capture the sharp peak at x=0.
+---
 
 #### Global 3-Point (Quadratic) Interpolation
 
-Using nodes $x_0 = -1$, $x_1 = 0$, and $x_2 = 1$, with function values:
-- $f(-1) = \frac{1}{26}$
-- $f(0) = \frac{1}{1+25(0)^2} = 1$
-- $f(1) = \frac{1}{26}$
+**Nodes:** \(x_0=-1\), \(x_1=0\), and \(x_2=1\)
 
-Computing the divided differences:
+**Function values:**
+\[
+f(-1)=\frac{1}{26},\quad f(0)=1,\quad f(1)=\frac{1}{26}.
+\]
 
-1. First divided differences:
-   $$f[x_0,x_1] = \frac{f(0) - f(-1)}{0-(-1)} = \frac{1 - \frac{1}{26}}{1} = \frac{25}{26}$$
+**Divided differences:**
 
-   $$f[x_1,x_2] = \frac{f(1) - f(0)}{1-0} = \frac{\frac{1}{26} - 1}{1} = -\frac{25}{26}$$
+- Zeroth order:
+  \[
+  f[x_0]=\frac{1}{26},\quad f[x_1]=1,\quad f[x_2]=\frac{1}{26}.
+  \]
+- First order:
+  \[
+  f[x_0,x_1]=\frac{1-1/26}{0-(-1)}=\frac{25}{26},\quad
+  f[x_1,x_2]=\frac{1/26-1}{1-0}=-\frac{25}{26}.
+  \]
+- Second order:
+  \[
+  f[x_0,x_1,x_2]=\frac{-\frac{25}{26}-\frac{25}{26}}{1-(-1)}=-\frac{25}{26}.
+  \]
 
-2. Second divided difference:
-   $$f[x_0,x_1,x_2] = \frac{f[x_1,x_2] - f[x_0,x_1]}{x_2-x_0} = \frac{-\frac{25}{26} - \frac{25}{26}}{2} = -\frac{25}{26}$$
+**Newton form:**
+\[
+\begin{aligned}
+P_2(x)&=f(-1)+f[x_0,x_1](x+1)+f[x_0,x_1,x_2](x+1)(x-0)\\[1mm]
+&=\frac{1}{26}+\frac{25}{26}(x+1)-\frac{25}{26}(x+1)x.
+\end{aligned}
+\]
 
-3. The quadratic interpolation polynomial in Newton form:
-   P₂(x) = f[x₀] + f[x₀,x₁](x - x₀) + f[x₀,x₁,x₂](x - x₀)(x - x₁)
+Notice that
+\[
+(x+1)-x(x+1)= (x+1)(1-x)=1-x^2.
+\]
+Thus,
+\[
+P_2(x)=\frac{1}{26}+\frac{25}{26}(1-x^2)=1-\frac{25}{26}x^2.
+\]
 
-   Substituting values:
-   $$P_2(x) = \frac{1}{26} + \frac{25}{26}(x+1) - \frac{25}{26}(x+1)(x)$$
+**Integration:**
+\[
+\begin{aligned}
+\int_{-1}^{1}P_2(x)\,dx &= \int_{-1}^{1}\Bigl(1-\frac{25}{26}x^2\Bigr)dx\\[1mm]
+&= \Bigl[x\Bigr]_{-1}^{1} - \frac{25}{26}\Bigl[\frac{x^3}{3}\Bigr]_{-1}^{1}\\[1mm]
+&= \Bigl[(1-(-1))\Bigr] - \frac{25}{26}\Bigl(\frac{1^3-(-1)^3}{3}\Bigr)\\[1mm]
+&= 2 - \frac{25}{26}\cdot\frac{2}{3}\\[1mm]
+&= 2 - \frac{50}{78} = 2 - \frac{25}{39}\\[1mm]
+&= \frac{78-25}{39}=\frac{53}{39}\approx 1.359.
+\end{aligned}
+\]
 
-   Simplifying and noting that $(x+1)(x) = x^2 + x$:
-   $$P_2(x) = \frac{1}{26} + \frac{25}{26}(x+1) - \frac{25}{26}(x^2+x) = \frac{1}{26} + \frac{25}{26} + \frac{25x}{26} - \frac{25x^2}{26} - \frac{25x}{26}$$
+*Observations:*  
+Even though the quadratic interpolant exactly matches the values at \(-1\), 0, and 1, it grossly overestimates the integral (by about 147%) because the interpolating parabola does not capture the rapid decay away from the central peak.
 
-   This further simplifies to:
-   $$P_2(x) = \frac{26}{26} - \frac{25x^2}{26} = 1 - \frac{25}{26}x^2$$
+---
 
-Integrating the quadratic polynomial:
-$$\int_{-1}^{1} P_2(x)\,dx = \int_{-1}^{1} \left(1 - \frac{25}{26}x^2\right) dx = \left[x - \frac{25}{26}\frac{x^3}{3}\right]_{-1}^{1}$$
+#### Global 5-Point (Quartic) Interpolation
 
-$$= \left(1 - \frac{25}{26}\frac{1}{3}\right) - \left(-1 - \frac{25}{26}\frac{-1}{3}\right) = 2 - 2\frac{25}{26}\frac{1}{3} = 2 - \frac{50}{78} = \frac{78-50}{39} = \frac{28}{39} \approx 0.7179$$
+**Nodes:** Equally spaced at
+\[
+x_0=-1,\quad x_1=-0.5,\quad x_2=0,\quad x_3=0.5,\quad x_4=1.
+\]
 
-This value overestimates the true integral (0.54936), but is closer than the linear approximation. The quadratic interpolant captures the central peak but doesn't properly model the function's decay away from the origin.
+**Function values:**
+\[
+\begin{aligned}
+f(-1)&=\frac{1}{1+25}= \frac{1}{26}\approx 0.03846,\\[1mm]
+f(-0.5)&=\frac{1}{1+25(0.25)}=\frac{1}{7.25}\approx 0.13793,\\[1mm]
+f(0)&=1,\\[1mm]
+f(0.5)&\approx 0.13793,\\[1mm]
+f(1)&\approx 0.03846.
+\end{aligned}
+\]
+
+**Due to the even symmetry** of the function, the interpolating polynomial must be even; thus, it takes the form
+\[
+P_4(x)=Ax^4+Bx^2+C,
+\]
+with \(C=P_4(0)=1\).
+
+Matching the endpoints:
+\[
+P_4(1)=A+B+1=f(1)=\frac{1}{26}\quad\Longrightarrow\quad A+B=\frac{1}{26}-1=-\frac{25}{26}.
+\]
+
+Also, matching at \(x=0.5\):
+\[
+P_4(0.5)=A(0.5)^4+B(0.5)^2+1=\frac{A}{16}+\frac{B}{4}+1\approx 0.13793.
+\]
+Thus,
+\[
+\frac{A}{16}+\frac{B}{4} \approx 0.13793-1=-0.86207.
+\]
+Multiplying by 16:
+\[
+A+4B\approx -13.79312.
+\]
+
+Now, subtract the equation \(A+B=-\frac{25}{26}\approx -0.96154\) from this:
+\[
+(A+4B) - (A+B)=3B\approx -13.79312+0.96154=-12.83158,\quad B\approx -4.27719.
+\]
+Then,
+\[
+A\approx -0.96154 - B\approx 3.31565.
+\]
+
+Thus, the quartic polynomial (written in simplified form) is
+
+\[
+P_4(x)=\frac{1250}{377}x^4-\frac{3225}{754}x^2+1,
+\]
+
+since
+\[
+\frac{1250}{377}\approx 3.316\quad\text{and}\quad\frac{3225}{754}\approx 4.278.
+\]
+
+**Integration:**
+
+Because \(P_4(x)\) is even, we have
+
+\[
+\int_{-1}^{1}P_4(x)\,dx=2\int_{0}^{1}\left(\frac{1250}{377}x^4-\frac{3225}{754}x^2+1\right)dx.
+\]
+
+Carrying out the integration yields
+
+\[
+\int_{-1}^{1}P_4(x)\,dx=\frac{179}{377}\approx 0.4748.
+\]
+
+*Observations:*  
+- The quartic interpolation (using 5 nodes) produces a much better approximation than the linear or quadratic cases.
+- With an approximation of \(0.4748\) (relative error of about 13.57%), the quartic polynomial better captures the sharp central peak as well as the rapid decay.
+- Still, it underestimates the exact value \(0.54936\), highlighting the challenge posed by the function’s sharp features.
+
+---
 
 ### (c) Gauss–Legendre Quadrature
 
-For the integral $\int_{-1}^{1}\frac{1}{1+25x^2}\,dx$, Gauss-Legendre quadrature yields the following results:
+For the integral
 
-| $n$ | Approximation | Absolute Error | Relative Error |
-|-----|---------------|----------------|----------------|
-| 2   | 0.2142857143  | 0.33507        | 60.99%         |
-| 4   | 0.3709273183  | 0.17843        | 32.48%         |
-| 6   | 0.4617005584  | 0.08766        | 15.96%         |
+\[
+\int_{-1}^{1}\frac{1}{1+25x^2}\,dx,
+\]
 
-**Observations:**
-- Increasing the number of nodes steadily improves the approximation
-- Even with 6 nodes, the quadrature result (0.4617) underestimates the true value (0.54936)
-- This is due to the function's sharp peak at x=0, which is challenging to capture with global methods
-- The function $f(x)=\frac{1}{1+25x^2}$ has a Runge phenomenon-like behavior in the sense that it has a very steep gradient near x=0
+the following results were obtained:
+
+| \(n\) | Approximation  | Absolute Error | Relative Error |
+|:-----:|:--------------:|:--------------:|:--------------:|
+| 2     | 0.2142857143   | 0.33507        | 60.99%         |
+| 4     | 0.3709273183   | 0.17843        | 32.48%         |
+| 6     | 0.4617005584   | 0.08766        | 15.96%         |
+
+**Observations on Gauss–Legendre Performance:**
+- Convergence is slower than in Problem 1 because the sharp peak near \(x=0\) challenges the quadrature.
+- Even with 6 nodes, the relative error remains around 16%.
+- This example underscores how the smoothness of the integrand affects the efficiency of Gauss–Legendre quadrature.
+
+---
+
+### Summary of Polynomial Approximations
+
+Below is a table comparing the approximations against the exact value \(0.54936\):
+
+| Method                   | Polynomial                                  | Approximation | Absolute Error | Relative Error |
+|--------------------------|---------------------------------------------|---------------|----------------|----------------|
+| **Exact Value**          | -                                           | 0.54936       | -              | -              |
+| **Linear (2-point)**     | \(P_1(x)=\tfrac{1}{26}\)                      | 0.07692       | 0.47244        | 86.00%         |
+| **Quadratic (3-point)**  | \(P_2(x)=1-\tfrac{25}{26}x^2\)                | 1.35900       | 0.80964        | 147.38%        |
+| **Quartic (5-point)**    | \(P_4(x)=\tfrac{1250}{377}x^4-\tfrac{3225}{754}x^2+1\) | 0.47480       | 0.07456        | 13.57%         |
+| **Gauss–Legendre (2-node)** | -                                        | 0.21429       | 0.33507        | 60.99%         |
+| **Gauss–Legendre (4-node)** | -                                        | 0.37093       | 0.17843        | 32.48%         |
+| **Gauss–Legendre (6-node)** | -                                        | 0.46170       | 0.08766        | 15.96%         |
+
+**Comparative Analysis:**
+- The linear interpolant grossly underestimates the integral.
+- The quadratic interpolant overestimates by a large margin.
+- The quartic interpolant (with nodes strategically including \(x=0\)) achieves the best accuracy among the polynomial methods.
+- Gauss–Legendre quadrature, although optimal for many smooth functions, also underestimates the integral here due to the sharp peak at \(x=0\).
+
+---
 
 ## Problem 3: Determining a Hermite-Type Quadrature Formula
 
 ### Problem Statement
 
-Determine constants $a$, $b$, $c$, and $d$ so that the quadrature formula
-$$\int_{-1}^{1} f(x)\,dx = a\,f(-1) + b\,f(1) + c\,f'(-1) + d\,f'(1)$$
-is exact for all polynomials $f(x)$ of degree 3 or less.
+Determine constants \(a\), \(b\), \(c\), and \(d\) so that the quadrature formula
+
+\[
+\int_{-1}^{1} f(x)\,dx = a\,f(-1) + b\,f(1) + c\,f'(-1) + d\,f'(1)
+\]
+
+is exact for all polynomials \(f(x)\) of degree 3 or less.
 
 ### Derivation
 
-For the formula to be exact for all polynomials up to degree 3, it must produce exact results for $f(x)=1$, $f(x)=x$, $f(x)=x^2$, and $f(x)=x^3$. This gives us four equations to determine our four unknowns.
+For exactness on \(f(x)=1\), \(x\), \(x^2\), and \(x^3\), we set up:
 
-#### Equation 1: $f(x)=1$
-- Function values: $f(-1)=1$, $f(1)=1$
-- Derivatives: $f'(-1)=0$, $f'(1)=0$
-- Exact integral: $\int_{-1}^{1}1\,dx = 2$
-- Resulting equation: $a + b = 2$
+1. **For \(f(x)=1\):**  
+   - \(f(-1)=1\), \(f(1)=1\); \(f'(-1)=0\), \(f'(1)=0\).  
+   - \(\int_{-1}^{1}1\,dx = 2\).  
+   - **Equation:** \(a+b=2\).
 
-#### Equation 2: $f(x)=x$
-- Function values: $f(-1)=-1$, $f(1)=1$
-- Derivatives: $f'(-1)=1$, $f'(1)=1$
-- Exact integral: $\int_{-1}^{1}x\,dx = 0$
-- Resulting equation: $-a + b + c + d = 0$
+2. **For \(f(x)=x\):**  
+   - \(f(-1)=-1\), \(f(1)=1\); \(f'(-1)=1\), \(f'(1)=1\).  
+   - \(\int_{-1}^{1}x\,dx = 0\).  
+   - **Equation:** \(-a+b+c+d=0\).
 
-#### Equation 3: $f(x)=x^2$
-- Function values: $f(-1)=1$, $f(1)=1$
-- Derivatives: $f'(-1)=-2$, $f'(1)=2$
-- Exact integral: $\int_{-1}^{1}x^2\,dx = \frac{2}{3}$
-- Resulting equation: $a + b - 2c + 2d = \frac{2}{3}$
+3. **For \(f(x)=x^2\):**  
+   - \(f(-1)=1\), \(f(1)=1\); \(f'(-1)=-2\), \(f'(1)=2\).  
+   - \(\int_{-1}^{1}x^2\,dx = \frac{2}{3}\).  
+   - **Equation:** \(a+b-2c+2d=\frac{2}{3}\).
 
-#### Equation 4: $f(x)=x^3$
-- Function values: $f(-1)=-1$, $f(1)=1$
-- Derivatives: $f'(-1)=3$, $f'(1)=3$
-- Exact integral: $\int_{-1}^{1}x^3\,dx = 0$
-- Resulting equation: $-a + b + 3c + 3d = 0$
+4. **For \(f(x)=x^3\):**  
+   - \(f(-1)=-1\), \(f(1)=1\); \(f'(-1)=3\), \(f'(1)=3\).  
+   - \(\int_{-1}^{1}x^3\,dx = 0\).  
+   - **Equation:** \(-a+b+3c+3d=0\).
 
-#### Solving the System of Equations
+**Solving the system:**
 
-From equation 1: $b = 2 - a$
+- From Equation 1:  
+  \[
+  b=2-a.
+  \]
+- Substitute into Equation 2:
+  \[
+  -a+(2-a)+c+d=0\quad\Longrightarrow\quad c+d=2a-2.
+  \]
+- Substitute into Equation 3:
+  \[
+  a+(2-a)-2c+2d=\frac{2}{3}\quad\Longrightarrow\quad 2-2c+2d=\frac{2}{3}.
+  \]
+  Divide by 2:
+  \[
+  -c+d=-\frac{2}{3}\quad\Longrightarrow\quad d-c=-\frac{2}{3}.
+  \]
+  (Equivalently, \( -c+d = -\frac{2}{3}\).)
+- Now, adding \(c+d=2a-2\) and \(-c+d=-\frac{2}{3}\) gives:
+  \[
+  2d=2a-2-\frac{2}{3}=2a-\frac{8}{3}\quad\Longrightarrow\quad d=a-\frac{4}{3}.
+  \]
+- Then,
+  \[
+  c=(2a-2)-d=2a-2-\left(a-\frac{4}{3}\right)=a-\frac{2}{3}.
+  \]
+- Substitute \(b=2-a\), \(c=a-\frac{2}{3}\), and \(d=a-\frac{4}{3}\) into Equation 4:
+  \[
+  -a+(2-a)+3\Bigl(a-\frac{2}{3}\Bigr)+3\Bigl(a-\frac{4}{3}\Bigr)=0.
+  \]
+  Simplify:
+  \[
+  -2a+2+3a-2+3a-4=0\quad\Longrightarrow\quad 4a-4=0,\quad\text{so}\quad a=1.
+  \]
+- Then,
+  \[
+  b=2-1=1,\quad c=1-\frac{2}{3}=\frac{1}{3},\quad d=1-\frac{4}{3}=-\frac{1}{3}.
+  \]
 
-Substituting into equation 2:
-$-a + (2-a) + c + d = 0$
-$-2a + 2 + c + d = 0$
-$c + d = 2a - 2$
+Thus, the Hermite-type quadrature formula is
 
-Substituting $b = 2-a$ into equation 3:
-$a + (2-a) - 2c + 2d = \frac{2}{3}$
-$2 - 2c + 2d = \frac{2}{3}$
-$-c + d = \frac{1}{3} - 1 = -\frac{2}{3}$
+\[
+\int_{-1}^{1} f(x)\,dx \approx f(-1)+f(1)+\frac{1}{3}\,f'(-1)-\frac{1}{3}\,f'(1).
+\]
 
-From these two equations:
-$c + d = 2a - 2$
-$-c + d = -\frac{2}{3}$
+**Verification:**
 
-Adding them:
-$(c + d) + (-c + d) = (2a - 2) + (-\frac{2}{3})$
-$2d = 2a - 2 - \frac{2}{3}$
-$2d = 2a - \frac{8}{3}$
-$d = a - \frac{4}{3}$
+- For \(f(x)=1\):  
+  Exact: \(2\);  
+  Formula: \(1+1+0-0=2\).
 
-Substituting back:
-$c + \left(a - \frac{4}{3}\right) = 2a - 2$
-$c = 2a - 2 - a + \frac{4}{3} = a - \frac{2}{3}$
+- For \(f(x)=x\):  
+  Exact: \(0\);  
+  Formula: \((-1)+1+\frac{1}{3}(1)-\frac{1}{3}(1)=0\).
 
-Now we substitute these expressions for $c$ and $d$ into equation 4:
-$-a + (2-a) + 3\left(a - \frac{2}{3}\right) + 3\left(a - \frac{4}{3}\right) = 0$
+- For \(f(x)=x^2\):  
+  Exact: \(\frac{2}{3}\);  
+  Formula: \(1+1+\frac{1}{3}(-2)-\frac{1}{3}(2)=2-\frac{4}{3}=\frac{2}{3}\).
 
-Simplifying:
-$-a + 2 - a + 3a - 2 + 3a - 4 = 0$
-$-2a + 6a - 4 = 0$
-$4a = 4$
-$a = 1$
+- For \(f(x)=x^3\):  
+  Exact: \(0\);  
+  Formula: \((-1)+1+\frac{1}{3}(3)-\frac{1}{3}(3)=0\).
 
-Substituting back:
-$b = 2 - 1 = 1$
-$c = 1 - \frac{2}{3} = \frac{1}{3}$
-$d = 1 - \frac{4}{3} = -\frac{1}{3}$
-
-Therefore, the Hermite-type quadrature formula is:
-$$\int_{-1}^{1} f(x)\,dx \approx f(-1) + f(1) + \frac{1}{3}f'(-1) - \frac{1}{3}f'(1)$$
-
-#### Verification
-
-Let's verify this formula with our test functions:
-
-For $f(x) = 1$:
-- Exact: $\int_{-1}^{1} 1\,dx = 2$
-- Our formula: $1 \cdot 1 + 1 \cdot 1 + \frac{1}{3} \cdot 0 - \frac{1}{3} \cdot 0 = 2$ ✓
-
-For $f(x) = x$:
-- Exact: $\int_{-1}^{1} x\,dx = 0$
-- Our formula: $1 \cdot (-1) + 1 \cdot 1 + \frac{1}{3} \cdot 1 - \frac{1}{3} \cdot 1 = 0$ ✓
-
-For $f(x) = x^2$:
-- Exact: $\int_{-1}^{1} x^2\,dx = \frac{2}{3}$
-- Our formula: $1 \cdot 1 + 1 \cdot 1 + \frac{1}{3} \cdot (-2) - \frac{1}{3} \cdot 2 = 2 - \frac{2}{3} - \frac{2}{3} = \frac{2}{3}$ ✓
-
-For $f(x) = x^3$:
-- Exact: $\int_{-1}^{1} x^3\,dx = 0$
-- Our formula: $1 \cdot (-1) + 1 \cdot 1 + \frac{1}{3} \cdot 3 - \frac{1}{3} \cdot 3 = 0$ ✓
-
-The formula correctly integrates all polynomials of degree 3 or less.
+---
 
 ## Conclusion
 
-This homework explored three different numerical integration problems, highlighting the strengths and limitations of various integration techniques:
+This homework explored three different numerical integration problems:
 
-1. **Problem 1** demonstrated that Gauss-Legendre quadrature converges extremely rapidly for smooth functions ($e^x\cos x$), achieving high precision with relatively few function evaluations.
+1. **Problem 1:**  
+   The analytical evaluation of \(\int_{0}^{\pi} e^x\cos x\,dx\) yielded the exact result \(-\frac{e^\pi+1}{2}\) (approximately \(-12.07035\)). Gauss–Legendre quadrature was shown to converge extremely rapidly for this smooth integrand.
 
-2. **Problem 2** revealed the challenges of integrating functions with sharp peaks ($\frac{1}{1+25x^2}$):
-   - Global polynomial interpolation using Newton's divided differences can lead to significant under- or overestimation
-   - Even Gauss-Legendre quadrature requires more nodes to achieve acceptable accuracy
-   - The function's shape creates difficulties for all global approximation methods
+2. **Problem 2:**  
+   The integral \(\int_{-1}^{1}\frac{1}{1+25x^2}\,dx\) was evaluated analytically to be \(\frac{2}{5}\arctan(5)\approx0.54936\).  
+   - **Global polynomial interpolation** using Newton's divided differences was performed with 2, 3, and 5 nodes. The linear interpolant grossly underestimated the area, the quadratic interpolant overestimated it, and the quartic interpolant (with nodes strategically including \(x=0\)) achieved a much better (though still not perfect) approximation.  
+   - **Gauss–Legendre quadrature** applied directly on \([-1,1]\) showed moderate improvement with increased nodes; even with 6 nodes the relative error was around 16%.
 
-3. **Problem 3** showed how incorporating derivative information in Hermite-type quadrature can improve the degree of precision, achieving exactness for cubic polynomials with just two function evaluations and two derivative evaluations.
+3. **Problem 3:**  
+   A Hermite-type quadrature formula incorporating derivative information was derived. The final formula,
+   \[
+   \int_{-1}^{1} f(x)\,dx \approx f(-1)+f(1)+\frac{1}{3}\,f'(-1)-\frac{1}{3}\,f'(1),
+   \]
+   is exact for all polynomials up to degree 3.
 
-The primary insights from this homework are:
+**Key Insights:**
 
-- **Function smoothness** greatly impacts the convergence rate of numerical integration methods
-- **Gauss-Legendre quadrature** generally outperforms Newton-Cotes formulas for the same number of function evaluations
-- **Global polynomial interpolation** may not be suitable for functions with sharp features
-- **Derivative information** can enhance the precision of quadrature formulas
+- **Function Smoothness:** Smooth functions (like \(e^x\cos x\)) allow Gauss–Legendre quadrature to converge exponentially fast, whereas functions with sharp features (like \(\frac{1}{1+25x^2}\)) challenge both global interpolation and quadrature methods.
+- **Node Placement:** The strategic placement of nodes (especially including the region where the function attains its peak) is critical. For instance, the quartic interpolant that includes \(x=0\) performs significantly better.
+- **Use of Derivative Information:** Incorporating derivatives (as in the Hermite-type formula) can dramatically improve accuracy with fewer evaluation points.
+- **No Universal Method:** The optimal numerical integration method depends on the integrand’s properties and the desired accuracy.
 
-These concepts are fundamental to choosing appropriate numerical integration strategies for different types of functions and required accuracy levels.
+These principles are fundamental when selecting numerical integration strategies for various applications in scientific computing and engineering.
