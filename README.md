@@ -1,3 +1,43 @@
+
+///
+
+///
+
+///
+
+///
+
+///
+
+///
+
+///
+
+///
+
+///
+
+//
+
+///
+
+///
+
+
+
+///
+
+///
+
+///
+
+///
+
+///
+
+
+
+
 # Numerical Analysis Homework #6
 
 ## Problem 1: Evaluating $\int_{0}^{\pi} e^x \cos x\,dx$
