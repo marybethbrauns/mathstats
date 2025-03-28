@@ -1,5 +1,4 @@
 # Numerical Analysis HW #8 | Marybeth Brauns
-## Introduction
 
 ## Problem 1: Verification of the 1-Norm
 
