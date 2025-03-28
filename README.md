@@ -1,10 +1,5 @@
-# Vector and Matrix Norms: Theoretical Analysis
-
+# Numerical Analysis HW #8 | Marybeth Brauns
 ## Introduction
-
-This document presents formal proofs and counterexamples relating to vector and matrix norms in finite-dimensional spaces. The analysis covers verification of norm properties, counterexample construction, limit characterization of the infinity norm, and transitivity of norm equivalence. These results are fundamental in functional analysis, numerical linear algebra, and approximation theory.
-
----
 
 ## Problem 1: Verification of the 1-Norm
 
