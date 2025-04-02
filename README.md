@@ -1,4 +1,4 @@
-# Statistical Analysis Report: Confidence Intervals, Maximum Likelihood Estimation, and Distribution Properties
+#Math Stats HW | Marybeth Brauns
 
 ## Problem 1: Analysis of Normal Random Sample
 
