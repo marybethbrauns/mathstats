@@ -1,3 +1,5 @@
+# Numerical Analysis Homework 9 | Marybeth Brauns
+
 ## Problem 1: Linear System Solution
 
 ### Problem Statement
