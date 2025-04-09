@@ -357,4 +357,3 @@ The close match confirms our result.
    - Stability analysis: all eigenvalues must have magnitude < 1
    - Principal Component Analysis: eigenvalues represent variance in each direction
 
-These numerical methods underpin countless applications, from structural engineering to weather prediction to internet search algorithms.
