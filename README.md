@@ -1,4 +1,4 @@
-# Comprehensive Statistical Analysis with Complete Solutions
+# Marybeth Brauns | MathStats HW #4
 
 ## Problem 1: Normal Distribution Hypothesis Testing
 
