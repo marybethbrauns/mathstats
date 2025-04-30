@@ -1,4 +1,4 @@
-# Marybeth Brauns | MathStats Homework #4
+# Comprehensive Statistical Analysis with Complete Solutions
 
 ## Problem 1: Normal Distribution Hypothesis Testing
 
@@ -6,19 +6,12 @@
 
 ### Part (a): Distributions of Xₙ under H₀ and H₁
 
-For a random sample X₁, X₂, ..., Xₙ from a N(μ, 4) distribution:
+Since X₁, X₂, ..., Xₙ ~ N(μ, 4) independently, the sample mean Xₙ = (1/n)∑ᵢ₌₁ⁿ Xᵢ follows a normal distribution:
 
-**Step-by-step derivation:**
-- When sampling from a normal distribution N(μ, σ²), the sample mean Xₙ follows a normal distribution with:
-  - Mean = μ (the sample mean is an unbiased estimator of the population mean)
-  - Variance = σ²/n (the variance decreases as sample size increases, reflecting increased precision)
-- In this case, σ² = 4, so Var(Xₙ) = 4/n
-
-Therefore:
 - Under H₀ (μ = 1): Xₙ ~ N(1, 4/n)
 - Under H₁ (μ = 0.5): Xₙ ~ N(0.5, 4/n)
 
-**Statistical Connection:** This result is exact for any sample size when sampling from normal distributions (unlike the Central Limit Theorem which applies asymptotically). This property is fundamental to many statistical tests and showcases how parameter estimation uncertainty (standard error) decreases at a rate of 1/√n.
+**Statistical Connection:** This exact result demonstrates a fundamental sampling distribution property: when sampling from a normal population, the sample mean is precisely normally distributed with the same mean and reduced variance (by a factor of n). This is a special case of the Central Limit Theorem that holds exactly for any sample size when the underlying population is normal.
 
 ### Part (b): Finding rejection region and power with α = 0.02
 
@@ -44,9 +37,7 @@ Therefore:
    - = P(Z < -0.9366)
    - = 0.1745 ≈ 0.175 or 17.5%
 
-The rejection region is Xₙ < 0.0812, and the power is approximately 17.5%.
-
-**Statistical Connection:** This calculation demonstrates the Neyman-Pearson framework for hypothesis testing, which formalizes the trade-off between Type I error (false positives, controlled at α = 0.02) and Type II error (false negatives, β = 1 - 0.175 = 0.825). The low power indicates a high probability of missing a real effect, illustrating why researchers must carefully consider effect size, variance, and sample size during experimental design.
+**Statistical Connection:** This calculation demonstrates the Neyman-Pearson framework for hypothesis testing, showing the trade-off between Type I error (controlled at α = 0.02) and Type II error (β = 0.825). The low power indicates a high probability of missing a true effect, illustrating why researchers must carefully consider effect size, variance, and sample size during experimental design.
 
 ### Part (c): Increasing power to 0.9
 
@@ -78,8 +69,6 @@ The rejection region is Xₙ < 0.0812, and the power is approximately 17.5%.
 5) With n = 179, the critical value is:
    - c = 1 - 4.108/√179 = 1 - 4.108/13.38 = 1 - 0.307 = 0.693
 
-Therefore, to achieve power = 0.9 with α = 0.02, we need n = 179 and c = 0.693.
-
 **Statistical Connection:** This demonstrates how sample size determines statistical power. The substantial increase from n = 20 to n = 179 illustrates the "cost" of achieving high power when effect sizes are modest relative to variability. This connects to the Law of Large Numbers - as n increases, test statistics become more precise and capable of detecting smaller effects.
 
 ## Problem 2: Multinomial Probability and Maximum Likelihood
@@ -88,37 +77,31 @@ Therefore, to achieve power = 0.9 with α = 0.02, we need n = 179 and c = 0.693.
 
 ### Part (a): Log-likelihood function
 
+For a multinomial distribution with three categories having probabilities p₁ = (1-θ)², p₂ = 2θ(1-θ), and p₃ = θ²:
+
 **Step-by-step derivation:**
-1) For a multinomial distribution with three categories having probabilities p₁ = (1-θ)², p₂ = 2θ(1-θ), and p₃ = θ²:
-   - The probability mass function is:
+1) The probability mass function is:
    - P(O₁, O₂, O₃) = n!/(O₁!O₂!O₃!) × p₁^O₁ × p₂^O₂ × p₃^O₃
-   - Where O₁, O₂, O₃ are the observed counts in each category and O₁+O₂+O₃ = n
 
-2) Substituting our probabilities:
-   - P(O₁, O₂, O₃) = n!/(O₁!O₂!O₃!) × ((1-θ)²)^O₁ × (2θ(1-θ))^O₂ × (θ²)^O₃
+2) Taking natural logarithm:
+   - ℓ(θ) = log[n!/(O₁!O₂!O₃!)] + O₁log((1-θ)²) + O₂log(2θ(1-θ)) + O₃log(θ²)
 
-3) Taking natural logarithm to get the log-likelihood function:
-   - log P = log[n!/(O₁!O₂!O₃!)] + O₁log((1-θ)²) + O₂log(2θ(1-θ)) + O₃log(θ²)
-
-4) Using logarithm properties to simplify:
+3) Using logarithm properties:
    - log((1-θ)²) = 2log(1-θ)
    - log(2θ(1-θ)) = log(2) + log(θ) + log(1-θ)
    - log(θ²) = 2log(θ)
 
-5) Reorganizing terms:
-   - L(θ) = log[n!/(O₁!O₂!O₃!)] + 2O₁log(1-θ) + O₂[log(2) + log(θ) + log(1-θ)] + 2O₃log(θ)
-   - = constant + 2O₁log(1-θ) + O₂log(1-θ) + O₂log(θ) + O₂log(2) + 2O₃log(θ)
+4) Simplifying:
+   - ℓ(θ) = constant + 2O₁log(1-θ) + O₂[log(2) + log(θ) + log(1-θ)] + 2O₃log(θ)
    - = constant + (2O₁ + O₂)log(1-θ) + (O₂ + 2O₃)log(θ) + O₂log(2)
 
-Where "constant" represents terms that don't involve θ.
-
-**Statistical Connection:** This exemplifies Fisher's scoring method, where log-transformation converts multiplicative probabilities to additive terms. The expression shows how sufficient statistics emerge naturally - the entire dataset's information for estimating θ is captured in just the counts (2O₁ + O₂) and (O₂ + 2O₃).
+**Statistical Connection:** This exemplifies Fisher's scoring method, where log-transformation converts multiplicative probabilities to additive terms. The expression reveals sufficient statistics - the entire dataset's information for estimating θ is captured in just the count combinations (2O₁ + O₂) and (O₂ + 2O₃).
 
 ### Part (b): Maximum likelihood estimator
 
 **Step-by-step derivation:**
-1) To find the MLE, differentiate L(θ) with respect to θ and set equal to zero:
-   - dL/dθ = -(2O₁ + O₂)/(1-θ) + (O₂ + 2O₃)/θ = 0
+1) To find the MLE, differentiate ℓ(θ) with respect to θ and set equal to zero:
+   - dℓ/dθ = -(2O₁ + O₂)/(1-θ) + (O₂ + 2O₃)/θ = 0
 
 2) Solving for θ:
    - (2O₁ + O₂)/(1-θ) = (O₂ + 2O₃)/θ
@@ -132,33 +115,25 @@ Where "constant" represents terms that don't involve θ.
 3) Therefore:
    - θ̂ = (O₂ + 2O₃)/(2n)
 
-**Statistical Connection:** This demonstrates how maximum likelihood translates a probabilistic model into a parameter estimator. The genetic interpretation (θ is the allele frequency) emerges naturally from the mathematics. The estimator effectively counts alleles - heterozygotes (O₂) contribute one copy, homozygotes (O₃) contribute two copies, divided by the total possible number of alleles (2n).
+**Statistical Connection:** The MLE has a beautiful genetic interpretation - it estimates allele frequency by counting alleles (heterozygotes contribute one copy, homozygotes two copies) divided by total possible alleles (2n). This demonstrates how maximum likelihood translates a probabilistic model into an optimal parameter estimator.
 
 ### Part (c): Fisher information and asymptotic distribution
 
 **Step-by-step derivation:**
 1) Calculate the second derivative of log-likelihood:
-   - d²L/dθ² = -[(2O₁ + O₂)/(1-θ)]²(-1) - [(O₂ + 2O₃)/θ]²(-1)
-   - = -(2O₁ + O₂)/(1-θ)² - (O₂ + 2O₃)/θ²
+   - d²ℓ/dθ² = -(2O₁ + O₂)/(1-θ)² - (O₂ + 2O₃)/θ²
 
-2) The Fisher information is I(θ) = -E[d²L/dθ²]. To find it, we need expected values of the counts:
-   - E[O₁] = n×p₁ = n(1-θ)²
-   - E[O₂] = n×p₂ = 2nθ(1-θ)
-   - E[O₃] = n×p₃ = nθ²
-   
+2) The Fisher information is I(θ) = -E[d²ℓ/dθ²]. Using:
+   - E[2O₁ + O₂] = 2n(1-θ)
+   - E[O₂ + 2O₃] = 2nθ
+
 3) Therefore:
-   - E[2O₁ + O₂] = 2n(1-θ)² + 2nθ(1-θ) = 2n[(1-θ)² + θ(1-θ)] = 2n(1-θ)(1-θ+θ) = 2n(1-θ)
-   - E[O₂ + 2O₃] = 2nθ(1-θ) + 2nθ² = 2nθ[(1-θ) + θ] = 2nθ
+   - I(θ) = 2n/(1-θ) + 2n/θ = 2n/(θ(1-θ))
 
-4) Fisher information:
-   - I(θ) = -E[d²L/dθ²] = E[(2O₁ + O₂)/(1-θ)² + (O₂ + 2O₃)/θ²]
-   - = 2n(1-θ)/(1-θ)² + 2nθ/θ² = 2n/(1-θ) + 2n/θ
-   - = 2n[θ + (1-θ)]/(θ(1-θ)) = 2n/(θ(1-θ))
-
-5) By asymptotic theory of maximum likelihood estimation:
+4) By asymptotic theory of maximum likelihood estimation:
    - θ̂ ~ N(θ, 1/I(θ)) = N(θ, θ(1-θ)/(2n))
 
-**Statistical Connection:** This connects to the Cramér-Rao lower bound theorem, which establishes the theoretical minimum variance for any unbiased estimator. The Fisher information I(θ) quantifies how much "statistical information" the data provides about the parameter θ. The expression also demonstrates the general asymptotic normality theorem for MLEs, showing how the variance approaches the inverse Fisher information as sample size increases.
+**Statistical Connection:** This connects to the Cramér-Rao lower bound theorem, which establishes the theoretical minimum variance for any unbiased estimator. The Fisher information I(θ) quantifies how much "statistical information" the data provides about the parameter θ, with larger values indicating more precise estimation potential.
 
 ### Part (d): MLE and confidence interval for Plato data
 
@@ -202,22 +177,18 @@ Where "constant" represents terms that don't involve θ.
    - = 29.61 + 7.67 + 87.58 = 124.86
 
 4) For the likelihood ratio test:
-   - −2ln(Λ) = 2∑i=1³ Oi ln(p̂i/p0,i)
+   - Under θ̂ = 0.7684:
+     * p̂₁ = (1-θ̂)² = 0.2316² = 0.05364
+     * p̂₂ = 2θ̂(1-θ̂) = 2(0.7684)(0.2316) = 0.3560
+     * p̂₃ = θ̂² = 0.7684² = 0.5904
    
-   Under θ̂ = 0.7684:
-   - p̂₁ = (1-θ̂)² = 0.2316² = 0.05364
-   - p̂₂ = 2θ̂(1-θ̂) = 2(0.7684)(0.2316) = 0.3560
-   - p̂₃ = θ̂² = 0.7684² = 0.5904
+   - Under θ₀ = 0.5:
+     * p₀,₁ = 0.25, p₀,₂ = 0.5, p₀,₃ = 0.25
 
-   Under θ₀ = 0.5:
-   - p₀,₁ = 0.25, p₀,₂ = 0.5, p₀,₃ = 0.25
-
-   Calculating:
+   - −2ln(Λ) = 2∑ᵢ₌₁³ Oᵢ ln(p̂ᵢ/p₀,ᵢ)
    - O₁ ln(p̂₁/p₀,₁) = 10 × ln(0.05364/0.25) = 10 × ln(0.21456) = -15.394
    - O₂ ln(p̂₂/p₀,₂) = 68 × ln(0.3560/0.5) = 68 × ln(0.712) = -23.106
    - O₃ ln(p̂₃/p₀,₃) = 112 × ln(0.5904/0.25) = 112 × ln(2.3616) = 96.242
-
-   Therefore:
    - −2ln(Λ) = 2[-15.394 - 23.106 + 96.242] = 2[57.742] = 115.5
 
 5) Both test statistics follow a χ² distribution with df = 1
@@ -256,12 +227,9 @@ Where "constant" represents terms that don't involve θ.
    - 1/(np₁) + 1/(n(1 - p₁)) = [(1-p₁) + p₁]/(np₁(1-p₁)) = 1/(np₁(1-p₁))
 
 7) Therefore:
-   - χ² = (X₁ - np₁)²/(np₁(1-p₁))
+   - χ² = (X₁ - np₁)²/(np₁(1-p₁)) = [(X₁ - np₁)/√(np₁(1-p₁))]²
 
-8) This can be rewritten as:
-   - χ² = [(X₁ - np₁)/√(np₁(1-p₁))]²
-
-**Statistical Connection:** This elegant result reveals a fundamental relationship between the chi-square and normal distributions: the chi-square statistic with 1 degree of freedom is precisely the square of a standard normal random variable. This occurs because X₁ (approximately) follows a normal distribution with mean np₁ and variance np₁(1-p₁) for large n. The constraints reduced the degrees of freedom from 2 categories to 1 parameter, explaining why the chi-square distribution has 1 degree of freedom in this case.
+**Statistical Connection:** This elegant result reveals a fundamental relationship between the chi-square and normal distributions: the chi-square statistic with 1 degree of freedom is precisely the square of a standard normal random variable. For large n, X₁ approximately follows a normal distribution with mean np₁ and variance np₁(1-p₁). The constraints reduced the degrees of freedom from 2 categories to 1 parameter, explaining why the chi-square distribution has 1 degree of freedom in this case.
 
 ## Problem 4: Comparing Means of Two Normal Distributions
 
