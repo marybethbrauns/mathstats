@@ -1,361 +1,368 @@
-# Numerical Analysis Homework 9 | Marybeth Brauns
+# Marybeth Brauns | MathStats Homework #4
 
-## Problem 1: Linear System Solution
+## Problem 1: Normal Distribution Hypothesis Testing
 
-### Problem Statement
+**Problem Statement:** Consider a random sample X₁, X₂, ..., Xₙ from a N(μ, 4) distribution. We want to test H₀: μ = 1 versus H₁: μ = 0.5.
 
-Solve the linear system: 
-```
-[4 3 0] [x₁]   [24]
-[3 4 -1] [x₂] = [30]
-[0 -1 4] [x₃]   [-24]
-```
+### Part (a): Distributions of Xₙ under H₀ and H₁
 
-using:
-- Gaussian elimination
-- Jacobi method (tolerance 10⁻⁷, x⁽⁰⁾=[0,0,0])
-- Gauss-Seidel method (same tolerance)
+For a random sample X₁, X₂, ..., Xₙ from a N(μ, 4) distribution:
 
-### a) Gaussian Elimination
+**Step-by-step derivation:**
+- When sampling from a normal distribution N(μ, σ²), the sample mean Xₙ follows a normal distribution with:
+  - Mean = μ (the sample mean is an unbiased estimator of the population mean)
+  - Variance = σ²/n (the variance decreases as sample size increases, reflecting increased precision)
+- In this case, σ² = 4, so Var(Xₙ) = 4/n
 
-#### Method Equations
+Therefore:
+- Under H₀ (μ = 1): Xₙ ~ N(1, 4/n)
+- Under H₁ (μ = 0.5): Xₙ ~ N(0.5, 4/n)
 
-Gaussian elimination works by transforming the system Ax = b into an equivalent upper triangular system Ux = c through elementary row operations:
+**Statistical Connection:** This result is exact for any sample size when sampling from normal distributions (unlike the Central Limit Theorem which applies asymptotically). This property is fundamental to many statistical tests and showcases how parameter estimation uncertainty (standard error) decreases at a rate of 1/√n.
 
-1. **Forward elimination**: Create zeros below the diagonal using:
-   - Row_i = Row_i - (a_ij/a_jj) × Row_j where j < i
+### Part (b): Finding rejection region and power with α = 0.02
 
-2. **Back substitution**: Solve for variables from bottom to top:
-   - x_n = c_n/u_nn
-   - x_i = (c_i - ∑ u_ij·x_j)/u_ii for j > i
+**Step-by-step calculation:**
+1) Since H₁ specifies μ = 0.5 which is less than μ = 1 under H₀, we need a one-sided lower-tail test. We reject H₀ when Xₙ < c.
 
-#### Example Solution
+2) For significance level α = 0.02, we need P(Xₙ < c | H₀ true) = 0.02
 
-```
-# Initial augmented matrix
-[4  3  0 | 24]
-[3  4 -1 | 30]
-[0 -1  4 |-24]
+3) Under H₀: Xₙ ~ N(1, 4/20) = N(1, 0.2) [using n = 20]
 
-# Eliminate using Row₂ = Row₂ - (3/4)×Row₁
-[4    3    0  | 24]
-[0  1.75  -1  | 12]
-[0   -1    4  |-24]
+4) Standardizing to get a standard normal Z:
+   - P(Xₙ < c) = P((Xₙ - 1)/√0.2 < (c - 1)/√0.2) = 0.02
+   - For a standard normal, P(Z < -2.0537) = 0.02
+   - Therefore: (c - 1)/√0.2 = -2.0537
+   - c - 1 = -2.0537 × √0.2 = -2.0537 × 0.4472 = -0.9184
+   - c = 1 - 0.9184 = 0.0816 ≈ 0.0812
 
-# Eliminate using Row₃ = Row₃ + (1/1.75)×Row₂
-[4    3     0   | 24]
-[0  1.75   -1   | 12]
-[0    0   3.43  |-17.14]
+5) Power calculation (probability of correctly rejecting H₀ when H₁ is true):
+   - Under H₁: Xₙ ~ N(0.5, 0.2)
+   - Power = P(Xₙ < 0.0812 | H₁ true)
+   - = P((Xₙ - 0.5)/√0.2 < (0.0812 - 0.5)/√0.2)
+   - = P(Z < (0.0812 - 0.5)/0.4472)
+   - = P(Z < -0.9366)
+   - = 0.1745 ≈ 0.175 or 17.5%
 
-# Back substitution
-x₃ = -17.14/3.43 = -5
-x₂ = (12 + (-5))/1.75 = 4
-x₁ = (24 - 3(4))/4 = 3
-```
+The rejection region is Xₙ < 0.0812, and the power is approximately 17.5%.
 
-**Solution**: x = [3, 4, -5]
+**Statistical Connection:** This calculation demonstrates the Neyman-Pearson framework for hypothesis testing, which formalizes the trade-off between Type I error (false positives, controlled at α = 0.02) and Type II error (false negatives, β = 1 - 0.175 = 0.825). The low power indicates a high probability of missing a real effect, illustrating why researchers must carefully consider effect size, variance, and sample size during experimental design.
 
-### b) Jacobi Method
+### Part (c): Increasing power to 0.9
 
-#### Method Equations
+**Step-by-step derivation:**
+1) We need to determine n and c such that:
+   - P(Xₙ < c | H₀ true) = 0.02 (control Type I error)
+   - P(Xₙ < c | H₁ true) = 0.9 (achieve desired power)
 
-For a system Ax = b, the Jacobi method splits matrix A into three parts:
-- D (diagonal matrix)
-- L (strictly lower triangular part)
-- U (strictly upper triangular part)
+2) Under H₀: Xₙ ~ N(1, 4/n)
+   From condition 1:
+   - P((Xₙ - 1)/√(4/n) < (c - 1)/√(4/n)) = 0.02
+   - (c - 1)/√(4/n) = z₀.₀₂ = -2.054
+   - c - 1 = -2.054 × √(4/n)
+   - c = 1 - 4.108/√n
 
-So A = D + L + U, and the iterative formula becomes:
+3) Under H₁: Xₙ ~ N(0.5, 4/n)
+   From condition 2:
+   - P((Xₙ - 0.5)/√(4/n) < (c - 0.5)/√(4/n)) = 0.9
+   - (c - 0.5)/√(4/n) = z₀.₉ = 1.282
+   - c - 0.5 = 1.282 × √(4/n)
+   - c = 0.5 + 2.564/√n
 
-$$x^{(k+1)} = D^{-1}(b - (L+U)x^{(k)})$$
+4) Setting these equal (the critical value c must be the same for both conditions):
+   - 1 - 4.108/√n = 0.5 + 2.564/√n
+   - 0.5 = 6.672/√n
+   - √n = 13.344
+   - n = 178.06 ≈ 179
 
-For each component i, this is:
+5) With n = 179, the critical value is:
+   - c = 1 - 4.108/√179 = 1 - 4.108/13.38 = 1 - 0.307 = 0.693
 
-$$x_i^{(k+1)} = \frac{1}{a_{ii}}\left(b_i - \sum_{j=1, j\neq i}^{n} a_{ij}x_j^{(k)}\right)$$
+Therefore, to achieve power = 0.9 with α = 0.02, we need n = 179 and c = 0.693.
 
-#### Simple Example
+**Statistical Connection:** This demonstrates how sample size determines statistical power. The substantial increase from n = 20 to n = 179 illustrates the "cost" of achieving high power when effect sizes are modest relative to variability. This connects to the Law of Large Numbers - as n increases, test statistics become more precise and capable of detecting smaller effects.
 
-Let's illustrate with a simple 2×2 system:
-```
-4x + y = 5
-x + 4y = 7
-```
+## Problem 2: Multinomial Probability and Maximum Likelihood
 
-Rewritten for Jacobi iteration:
-```
-x = (5 - y)/4
-y = (7 - x)/4
-```
+**Problem Statement:** Consider a genetic model with three genotypes having probabilities (1-θ)², 2θ(1-θ), and θ² respectively.
 
-Starting with [x,y] = [0,0]:
-- Iteration 1: x = (5-0)/4 = 1.25, y = (7-0)/4 = 1.75
-- Iteration 2: x = (5-1.75)/4 = 0.81, y = (7-1.25)/4 = 1.44
-- Iteration 3: x = (5-1.44)/4 = 0.89, y = (7-0.81)/4 = 1.55
-- ...converges to [1, 1.5]
+### Part (a): Log-likelihood function
 
-#### Application to Our System
+**Step-by-step derivation:**
+1) For a multinomial distribution with three categories having probabilities p₁ = (1-θ)², p₂ = 2θ(1-θ), and p₃ = θ²:
+   - The probability mass function is:
+   - P(O₁, O₂, O₃) = n!/(O₁!O₂!O₃!) × p₁^O₁ × p₂^O₂ × p₃^O₃
+   - Where O₁, O₂, O₃ are the observed counts in each category and O₁+O₂+O₃ = n
 
-Rewriting our original system for Jacobi iteration:
-```
-x₁ = (24 - 3x₂ - 0x₃)/4 = 6 - 0.75x₂
-x₂ = (30 - 3x₁ + x₃)/4 = 7.5 - 0.75x₁ + 0.25x₃
-x₃ = (-24 - 0x₁ + x₂)/4 = -6 + 0.25x₂
-```
+2) Substituting our probabilities:
+   - P(O₁, O₂, O₃) = n!/(O₁!O₂!O₃!) × ((1-θ)²)^O₁ × (2θ(1-θ))^O₂ × (θ²)^O₃
 
-In matrix form, the iteration matrix T = -D⁻¹(L+U) is:
-```
-T = [ 0    -0.75   0    ]
-    [-0.75   0     0.25 ]
-    [ 0     0.25   0    ]
-```
+3) Taking natural logarithm to get the log-likelihood function:
+   - log P = log[n!/(O₁!O₂!O₃!)] + O₁log((1-θ)²) + O₂log(2θ(1-θ)) + O₃log(θ²)
+
+4) Using logarithm properties to simplify:
+   - log((1-θ)²) = 2log(1-θ)
+   - log(2θ(1-θ)) = log(2) + log(θ) + log(1-θ)
+   - log(θ²) = 2log(θ)
+
+5) Reorganizing terms:
+   - L(θ) = log[n!/(O₁!O₂!O₃!)] + 2O₁log(1-θ) + O₂[log(2) + log(θ) + log(1-θ)] + 2O₃log(θ)
+   - = constant + 2O₁log(1-θ) + O₂log(1-θ) + O₂log(θ) + O₂log(2) + 2O₃log(θ)
+   - = constant + (2O₁ + O₂)log(1-θ) + (O₂ + 2O₃)log(θ) + O₂log(2)
+
+Where "constant" represents terms that don't involve θ.
+
+**Statistical Connection:** This exemplifies Fisher's scoring method, where log-transformation converts multiplicative probabilities to additive terms. The expression shows how sufficient statistics emerge naturally - the entire dataset's information for estimating θ is captured in just the counts (2O₁ + O₂) and (O₂ + 2O₃).
+
+### Part (b): Maximum likelihood estimator
+
+**Step-by-step derivation:**
+1) To find the MLE, differentiate L(θ) with respect to θ and set equal to zero:
+   - dL/dθ = -(2O₁ + O₂)/(1-θ) + (O₂ + 2O₃)/θ = 0
+
+2) Solving for θ:
+   - (2O₁ + O₂)/(1-θ) = (O₂ + 2O₃)/θ
+   - θ(2O₁ + O₂) = (1-θ)(O₂ + 2O₃)
+   - θ(2O₁ + O₂) = O₂ + 2O₃ - θO₂ - 2θO₃
+   - θ(2O₁ + O₂) + θO₂ + 2θO₃ = O₂ + 2O₃
+   - θ(2O₁ + 2O₂ + 2O₃) = O₂ + 2O₃
+   - 2θ(O₁ + O₂ + O₃) = O₂ + 2O₃
+   - 2nθ = O₂ + 2O₃     (since O₁ + O₂ + O₃ = n)
 
-#### Convergence Theory
+3) Therefore:
+   - θ̂ = (O₂ + 2O₃)/(2n)
 
-The Jacobi method converges if:
-1. The spectral radius ρ(T) < 1, or
-2. The matrix A is strictly diagonally dominant (|a_ii| > ∑_j≠i |a_ij|)
+**Statistical Connection:** This demonstrates how maximum likelihood translates a probabilistic model into a parameter estimator. The genetic interpretation (θ is the allele frequency) emerges naturally from the mathematics. The estimator effectively counts alleles - heterozygotes (O₂) contribute one copy, homozygotes (O₃) contribute two copies, divided by the total possible number of alleles (2n).
 
-For our system:
-- Computing eigenvalues of T: λ = 0, ±0.79
-- Therefore ρ(T) = 0.79 < 1, which guarantees convergence
-- Convergence rate estimate: error reduces by factor of ~0.79 each iteration
+### Part (c): Fisher information and asymptotic distribution
 
-#### Iteration Results
+**Step-by-step derivation:**
+1) Calculate the second derivative of log-likelihood:
+   - d²L/dθ² = -[(2O₁ + O₂)/(1-θ)]²(-1) - [(O₂ + 2O₃)/θ]²(-1)
+   - = -(2O₁ + O₂)/(1-θ)² - (O₂ + 2O₃)/θ²
 
-| Iteration | Solution | Error | Expected Error (0.79ᵏ×7.5) |
-|-----------|----------|-------|---------------------------|
-| 0 | [0.000, 0.000, 0.000] | — | 7.5 |
-| 1 | [6.000, 7.500, -6.000] | 7.5e+0 | 5.9 |
-| 2 | [0.375, 1.500, -4.125] | 6.0e+0 | 4.7 |
-| 10 | [2.599, 3.619, -4.866] | 9.2e-1 | 0.37 |
-| 30 | [2.996, 3.997, -4.999] | 8.3e-3 | 0.0003 |
-| 50 | [3.000, 4.000, -4.999] | 7.6e-5 | 2.21e-5 |
-| 79 | [3.000, 4.000, -5.000] | <1.0e-7 | 3.09e-9 |
+2) The Fisher information is I(θ) = -E[d²L/dθ²]. To find it, we need expected values of the counts:
+   - E[O₁] = n×p₁ = n(1-θ)²
+   - E[O₂] = n×p₂ = 2nθ(1-θ)
+   - E[O₃] = n×p₃ = nθ²
+   
+3) Therefore:
+   - E[2O₁ + O₂] = 2n(1-θ)² + 2nθ(1-θ) = 2n[(1-θ)² + θ(1-θ)] = 2n(1-θ)(1-θ+θ) = 2n(1-θ)
+   - E[O₂ + 2O₃] = 2nθ(1-θ) + 2nθ² = 2nθ[(1-θ) + θ] = 2nθ
 
-Note how the error drops by approximately the expected amount (factor of 0.79) each iteration, validating our theoretical convergence rate analysis. By iteration 79, the theoretical error bound (3.09e-9) is well below our tolerance of 10⁻⁷, confirming our stopping criterion.
+4) Fisher information:
+   - I(θ) = -E[d²L/dθ²] = E[(2O₁ + O₂)/(1-θ)² + (O₂ + 2O₃)/θ²]
+   - = 2n(1-θ)/(1-θ)² + 2nθ/θ² = 2n/(1-θ) + 2n/θ
+   - = 2n[θ + (1-θ)]/(θ(1-θ)) = 2n/(θ(1-θ))
 
-### c) Gauss-Seidel Method
+5) By asymptotic theory of maximum likelihood estimation:
+   - θ̂ ~ N(θ, 1/I(θ)) = N(θ, θ(1-θ)/(2n))
 
-#### Method Equations
+**Statistical Connection:** This connects to the Cramér-Rao lower bound theorem, which establishes the theoretical minimum variance for any unbiased estimator. The Fisher information I(θ) quantifies how much "statistical information" the data provides about the parameter θ. The expression also demonstrates the general asymptotic normality theorem for MLEs, showing how the variance approaches the inverse Fisher information as sample size increases.
 
-The Gauss-Seidel method improves on Jacobi by using updated values immediately. If we split A = D + L + U as before, the iterative formula becomes:
+### Part (d): MLE and confidence interval for Plato data
 
-$$(D+L)x^{(k+1)} = b - Ux^{(k)}$$
+**Step-by-step calculation:**
+1) Given data: O₁ = 10, O₂ = 68, O₃ = 112, n = 190
 
-or
+2) Calculate MLE:
+   - θ̂ = (O₂ + 2O₃)/(2n) = (68 + 2×112)/(2×190) = (68 + 224)/380 = 292/380 = 0.7684
 
-$$x^{(k+1)} = (D+L)^{-1}(b - Ux^{(k)})$$
+3) For a 99% confidence interval, we use the asymptotic variance from part (c):
+   - Var(θ̂) = θ̂(1-θ̂)/(2n) = 0.7684×(1-0.7684)/(2×190) = 0.7684×0.2316/380 = 0.0004682
+   - Standard error = √Var(θ̂) = 0.02164
 
-For each component:
+4) For 99% confidence:
+   - z₀.₉₉₅ = 2.576 (the z-value cutting off 0.5% in each tail)
+   - 99% CI = θ̂ ± z₀.₉₉₅ × SE = 0.7684 ± 2.576 × 0.02164
+   - = 0.7684 ± 0.0557 = (0.713, 0.824)
 
-$$x_i^{(k+1)} = \frac{1}{a_{ii}}\left(b_i - \sum_{j=1}^{i-1} a_{ij}x_j^{(k+1)} - \sum_{j=i+1}^{n} a_{ij}x_j^{(k)}\right)$$
+**Statistical Connection:** This application demonstrates how asymptotic theory enables practical inference when exact distributions are intractable. The confidence interval embodies the sampling variability principle - if we repeated the experiment many times, about 99% of similarly constructed intervals would contain the true parameter.
 
-#### Simple Example
+### Part (e): Likelihood ratio test
 
-Using the same 2×2 system:
-```
-4x + y = 5
-x + 4y = 7
-```
+**Step-by-step calculation:**
+1) Parameter spaces:
+   - Θ₀ = {1/2} (under H₀: θ = 1/2, Hardy-Weinberg equilibrium)
+   - Θ = (0,1) (full parameter space)
 
-Rewritten for Gauss-Seidel:
-```
-x = (5 - y)/4
-y = (7 - x_new)/4  # Using most recent x value
-```
+2) Expected cell counts under H₀ (θ = 0.5):
+   - p₁ = (1-0.5)² = 0.25
+   - p₂ = 2×0.5×0.5 = 0.5
+   - p₃ = 0.5² = 0.25
+   - E₁ = n×p₁ = 190×0.25 = 47.5
+   - E₂ = n×p₂ = 190×0.5 = 95
+   - E₃ = n×p₃ = 190×0.25 = 47.5
 
-Starting with [x,y] = [0,0]:
-- Step 1: x_new = (5-0)/4 = 1.25
-- Step 2: y_new = (7-1.25)/4 = 1.44 (using new x value)
-- Step 3: x_new = (5-1.44)/4 = 0.89 (using new y value)
-- Step 4: y_new = (7-0.89)/4 = 1.53 (using newest x value)
-- ...converges to [1, 1.5] faster than Jacobi
+3) Pearson chi-square statistic:
+   - χ² = Σ(Oᵢ - Eᵢ)²/Eᵢ
+   - = (10-47.5)²/47.5 + (68-95)²/95 + (112-47.5)²/47.5
+   - = (-37.5)²/47.5 + (-27)²/95 + (64.5)²/47.5
+   - = 1406.25/47.5 + 729/95 + 4160.25/47.5
+   - = 29.61 + 7.67 + 87.58 = 124.86
 
-#### Application to Our System
+4) For the likelihood ratio test:
+   - −2ln(Λ) = 2∑i=1³ Oi ln(p̂i/p0,i)
+   
+   Under θ̂ = 0.7684:
+   - p̂₁ = (1-θ̂)² = 0.2316² = 0.05364
+   - p̂₂ = 2θ̂(1-θ̂) = 2(0.7684)(0.2316) = 0.3560
+   - p̂₃ = θ̂² = 0.7684² = 0.5904
 
-The Gauss-Seidel iteration formulas:
-```
-x₁⁽ᵏ⁺¹⁾ = 6 - 0.75x₂⁽ᵏ⁾
-x₂⁽ᵏ⁺¹⁾ = 7.5 - 0.75x₁⁽ᵏ⁺¹⁾ + 0.25x₃⁽ᵏ⁾  # Uses updated x₁
-x₃⁽ᵏ⁺¹⁾ = -6 + 0.25x₂⁽ᵏ⁺¹⁾              # Uses updated x₂
-```
+   Under θ₀ = 0.5:
+   - p₀,₁ = 0.25, p₀,₂ = 0.5, p₀,₃ = 0.25
 
-#### Iteration Results
+   Calculating:
+   - O₁ ln(p̂₁/p₀,₁) = 10 × ln(0.05364/0.25) = 10 × ln(0.21456) = -15.394
+   - O₂ ln(p̂₂/p₀,₂) = 68 × ln(0.3560/0.5) = 68 × ln(0.712) = -23.106
+   - O₃ ln(p̂₃/p₀,₃) = 112 × ln(0.5904/0.25) = 112 × ln(2.3616) = 96.242
 
-| Iteration | Solution | Error |
-|-----------|----------|-------|
-| 1 | [6.000, 3.000, -5.250] | 6.0e+0 |
-| 5 | [3.183, 3.847, -5.038] | 1.1e-1 |
-| 15 | [3.002, 3.999, -5.000] | 1.0e-3 |
-| 25 | [3.000, 4.000, -5.000] | 9.1e-6 |
-| 35 | [3.000, 4.000, -5.000] | <1.0e-7 |
+   Therefore:
+   - −2ln(Λ) = 2[-15.394 - 23.106 + 96.242] = 2[57.742] = 115.5
 
-**Required iterations**: 35 (vs. 79 for Jacobi)
+5) Both test statistics follow a χ² distribution with df = 1
+   - P-values are extremely small (< 10⁻¹⁵)
+   - Therefore, we strongly reject H₀: θ = 0.5
 
-### What This Means
+6) This is consistent with our 99% confidence interval (0.713, 0.824), which excludes 0.5.
 
-1. **All methods found the same solution** [3, 4, -5], confirming their correctness.
+**Statistical Connection:** This applies Wilks' theorem, which states that -2log(Λ) asymptotically follows a chi-square distribution with degrees of freedom equal to the difference in dimensionality between parameter spaces. The test provides overwhelming evidence against Hardy-Weinberg equilibrium (θ = 0.5) in this population.
 
-2. **Efficiency comparison**:
-   - Gaussian elimination: O(n³) operations but direct (non-iterative)
-   - Jacobi method: O(n²) per iteration, needed 79 iterations
-   - Gauss-Seidel method: O(n²) per iteration, needed 35 iterations
+## Problem 3: Chi-Square Statistic for Binomial
 
-3. **When to use each method**:
-   - Gaussian elimination: Small to medium systems with dense matrices
-   - Jacobi: Systems where parallel computation is important
-   - Gauss-Seidel: General iterative solution when sequential processing is acceptable
+**Problem Statement:** Show that for a binomial distribution with two categories, the Pearson chi-square statistic can be expressed as the square of a standardized normal random variable.
 
-## Problem 2: Hilbert Matrix Condition Number
+**Step-by-step derivation:**
+1) For a binomial with two categories and probabilities p₁ and p₂ = 1-p₁:
+   - The Pearson chi-square statistic is:
+   - χ² = Σ(Xᵢ - npᵢ)²/(npᵢ) = (X₁ - np₁)²/(np₁) + (X₂ - np₂)²/(np₂)
 
-### Problem Statement
+2) Using the constraint X₁ + X₂ = n:
+   - X₂ = n - X₁
+   
+3) Using the constraint p₁ + p₂ = 1:
+   - p₂ = 1 - p₁
 
-For the n×n Hilbert matrix H^(n) with elements H_ij = 1/(i+j-1), compute the condition number for n = 2, ..., 6.
+4) Substituting these constraints:
+   - χ² = (X₁ - np₁)²/(np₁) + ((n - X₁) - n(1 - p₁))²/(n(1 - p₁))
+   - = (X₁ - np₁)²/(np₁) + (n - X₁ - n + np₁)²/(n(1 - p₁))
+   - = (X₁ - np₁)²/(np₁) + (np₁ - X₁)²/(n(1 - p₁))
 
-### Condition Number Equations
+5) Noting that (np₁ - X₁) = -(X₁ - np₁):
+   - χ² = (X₁ - np₁)²/(np₁) + (X₁ - np₁)²/(n(1 - p₁))
+   - = (X₁ - np₁)² × [1/(np₁) + 1/(n(1 - p₁))]
 
-The condition number κ(A) measures how much the solution x can change for small changes in the input data b in Ax = b:
+6) Simplifying the common factor:
+   - 1/(np₁) + 1/(n(1 - p₁)) = [(1-p₁) + p₁]/(np₁(1-p₁)) = 1/(np₁(1-p₁))
 
-$$κ(A) = ||A|| \cdot ||A^{-1}||$$
+7) Therefore:
+   - χ² = (X₁ - np₁)²/(np₁(1-p₁))
 
-Using the 2-norm, this becomes:
+8) This can be rewritten as:
+   - χ² = [(X₁ - np₁)/√(np₁(1-p₁))]²
 
-$$κ_2(A) = \frac{\sigma_{max}(A)}{\sigma_{min}(A)}$$
+**Statistical Connection:** This elegant result reveals a fundamental relationship between the chi-square and normal distributions: the chi-square statistic with 1 degree of freedom is precisely the square of a standard normal random variable. This occurs because X₁ (approximately) follows a normal distribution with mean np₁ and variance np₁(1-p₁) for large n. The constraints reduced the degrees of freedom from 2 categories to 1 parameter, explaining why the chi-square distribution has 1 degree of freedom in this case.
 
-where σ represents singular values of A.
+## Problem 4: Comparing Means of Two Normal Distributions
 
-#### Simple Example of Condition Number Impact
+**Problem Statement:** Compare the means of two normal distributions using sample data.
 
-Consider a system with condition number κ = 100:
-- If input data has 0.1% error (10⁻³)
-- Then solution could have up to 0.1% × 100 = 10% error
+### Part (a): Estimating means, difference, and variance
 
-For κ = 10⁷ (our Hilbert n=6 case):
-- 0.0000001% error in input (10⁻⁹)
-- Could cause 1% error in solution!
+**Step-by-step calculation:**
+1) For first group (x₁): (1.1650, 0.6268, 0.0751, 0.3516)
+   - Sample mean:
+   - x̄₁ = (1.1650 + 0.6268 + 0.0751 + 0.3516)/4 = 2.2185/4 = 0.554625
 
-### Results
+2) For second group (x₂): (0.3035, 2.6961, 1.0591, 2.7971, 1.2641)
+   - Sample mean:
+   - x̄₂ = (0.3035 + 2.6961 + 1.0591 + 2.7971 + 1.2641)/5 = 8.1199/5 = 1.62398
 
-| n | Condition Number κ(H^(n)) |
-|---|---------------------------|
-| 2 | 1.93 × 10¹ |
-| 3 | 5.24 × 10² |
-| 4 | 1.55 × 10⁴ |
-| 5 | 4.77 × 10⁵ |
-| 6 | 1.50 × 10⁷ |
+3) Difference of means:
+   - x̄₂ - x̄₁ = 1.62398 - 0.554625 = 1.069355
 
-### What This Means
+4) Sample variances:
+   - For first group:
+     * s₁² = Σ(x₁ᵢ - x̄₁)²/(n₁-1)
+     * = [(1.1650-0.5546)² + (0.6268-0.5546)² + (0.0751-0.5546)² + (0.3516-0.5546)²]/3
+     * = [(0.6104)² + (0.0722)² + (-0.4795)² + (-0.2030)²]/3
+     * = [0.3726 + 0.0052 + 0.2299 + 0.0412]/3 = 0.6489/3 = 0.2163
 
-1. **Mathematical insight**: The condition number grows approximately as:
+   - For second group:
+     * s₂² = Σ(x₂ᵢ - x̄₂)²/(n₂-1)
+     * = [(0.3035-1.6240)² + (2.6961-1.6240)² + (1.0591-1.6240)² + (2.7971-1.6240)² + (1.2641-1.6240)²]/4
+     * = [(-1.3205)² + (1.0721)² + (-0.5649)² + (1.1731)² + (-0.3599)²]/4
+     * = [1.7437 + 1.1494 + 0.3191 + 1.3762 + 0.1295]/4 = 4.7179/4 = 1.1795
 
-   $$κ(H^{(n)}) \approx \frac{(1+2n)^{1/2} \cdot 4^n}{\pi^{1/2}}$$
+5) Pooled variance (assuming equal population variances):
+   - s²ₚ = [(n₁-1)s₁² + (n₂-1)s₂²]/(n₁+n₂-2)
+   - = [(4-1)×0.2163 + (5-1)×1.1795]/(4+5-2)
+   - = [0.6489 + 4.718]/7 = 5.3669/7 = 0.7667
 
-2. **Numerical stability**: By n=6, a tiny change in input (1 part in 10⁷) can completely change the solution
+**Statistical Connection:** The pooled variance estimator exemplifies the principle of efficiency in statistical estimation. By assuming homogeneity of variances, we combine information from both samples to get a more precise estimate with more degrees of freedom (n₁+n₂-2 instead of separate estimates with n₁-1 and n₂-1 degrees of freedom).
 
-3. **Practical example**: Solving a linear system with Hilbert matrix n=6
-   - If coefficients known to 8 decimal places
-   - Solution might be accurate to only 8-7=1 decimal place
-   - Double precision (16 digits) would yield only ~9 digits of accuracy
+### Part (b): Standard error of difference of means
 
-## Problem 3: Power Iteration for Eigenvalues
+**Step-by-step calculation:**
+- The standard error quantifies uncertainty in the difference of means
+- For independent samples with equal variances:
+  * SE(x̄₂ - x̄₁) = √[s²ₚ × (1/n₁ + 1/n₂)]
+  * = √[0.7667 × (1/4 + 1/5)]
+  * = √[0.7667 × (0.25 + 0.20)]
+  * = √[0.7667 × 0.45]
+  * = √0.345 = 0.5874
 
-### Problem Statement
+**Statistical Connection:** This formula demonstrates how sampling errors propagate when taking the difference of two independently estimated quantities. The expression (1/n₁ + 1/n₂) shows how both sample sizes affect precision, highlighting the statistical principle that larger samples provide more accurate estimates.
 
-Find the largest eigenvalue and corresponding eigenvector of:
-```
-A = [2 1 1]
-    [1 3 1]
-    [1 1 4]
-```
-using power iteration with initial vector x⁽⁰⁾ = (1/√3)[1, 1, 1].
+### Part (c): 90% confidence interval
 
-### Method Equations
+**Step-by-step calculation:**
+1) For a 90% confidence interval with unknown variance:
+   - We use the t-distribution with degrees of freedom = n₁ + n₂ - 2 = 7
+   - For a 90% interval, we need t₀.₉₅₍₇₎ (for a two-sided interval)
+   - From t-tables or software: t₀.₉₅₍₇₎ = 1.8946
 
-The power iteration method is based on the fact that repeated multiplication by A will amplify the component in the direction of the dominant eigenvector:
+2) The confidence interval formula:
+   - (x̄₂ - x̄₁) ± t₀.₉₅₍₇₎ × SE
+   - = 1.069355 ± 1.8946 × 0.5874
+   - = 1.069355 ± 1.112863
+   - = (-0.0435, 2.1822) ≈ (-0.03, 2.17)
 
-1. Start with normalized vector x⁽⁰⁾
-2. Iterate: y⁽ᵏ⁺¹⁾ = A·x⁽ᵏ⁾
-3. Normalize: x⁽ᵏ⁺¹⁾ = y⁽ᵏ⁺¹⁾/||y⁽ᵏ⁺¹⁾||
-4. Estimate eigenvalue using Rayleigh quotient:
-   $$λ^{(k+1)} = \frac{(x^{(k+1)})^T A x^{(k+1)}}{(x^{(k+1)})^T x^{(k+1)}}$$
+**Statistical Connection:** This employs Student's t-distribution (developed by William Gosset) which accounts for the additional uncertainty introduced by estimating the variance. Unlike the normal distribution, the t-distribution has heavier tails, resulting in wider confidence intervals especially for small samples. The interval contains zero, suggesting we lack strong evidence of a difference between means.
 
-#### Simple Example 
+### Part (d): P-value for test of equal means
 
-For a 2×2 matrix with obvious eigenvalue:
-```
-A = [3 0]
-    [0 1]
-```
+**Step-by-step calculation:**
+1) The null hypothesis is H₀: μ₁ = μ₂ (or μ₂ - μ₁ = 0)
+   The alternative is H₁: μ₁ ≠ μ₂ (two-sided)
 
-Starting with x⁽⁰⁾ = [1/√2, 1/√2]:
-- y⁽¹⁾ = A·x⁽⁰⁾ = [3/√2, 1/√2]
-- x⁽¹⁾ = y⁽¹⁾/||y⁽¹⁾|| = [0.95, 0.32]
-- λ⁽¹⁾ = (x⁽¹⁾)ᵀA·x⁽¹⁾ = 2.82
-- After more iterations → x = [1, 0], λ = 3
+2) Test statistic:
+   - t = (x̄₂ - x̄₁)/SE = 1.069355/0.5874 = 1.820
 
-### Convergence Analysis
+3) P-value calculation for a two-tailed test:
+   - p-value = 2 × P(t₇ > 1.820)
+   - Using t-distribution with df = 7
+   - p-value ≈ 0.112
 
-The convergence rate depends on the ratio |λ₂/λ₁| of the second largest to largest eigenvalue:
+4) Since p-value > 0.05 (conventional significance level), we fail to reject H₀.
 
-$$||x^{(k)} - x_1|| \approx C\left|\frac{\lambda_2}{\lambda_1}\right|^k$$
+**Statistical Connection:** This exemplifies the duality between hypothesis tests and confidence intervals - the 90% confidence interval contains zero, and correspondingly, the p-value exceeds 0.10. The result illustrates the challenge of drawing conclusions with small sample sizes - despite an estimated mean difference of 1.07, we lack sufficient evidence to declare it statistically significant.
 
-where x₁ is the true eigenvector.
+### Part (e): Analysis with known variance of 1
 
-### Iteration Results
+**Step-by-step calculation:**
+1) If the variance is known to be σ² = 1 (rather than estimated):
+   - Standard error changes to:
+   - SE = √(σ² × (1/n₁ + 1/n₂)) = √(1 × (1/4 + 1/5)) = √0.45 = 0.6708
 
-| Iteration | Eigenvalue | Eigenvector | Error |
-|-----------|------------|-------------|-------|
-| 0 | — | [0.577, 0.577, 0.577] | — |
-| 1 | 5.1818 | [0.456, 0.570, 0.684] | 1.3e-2 |
-| 5 | 5.2143 | [0.398, 0.524, 0.753] | 1.4e-5 |
-| 10 | 5.2143 | [0.397, 0.521, 0.756] | 7.8e-9 |
-| 13 | 5.2143 | [0.397, 0.521, 0.756] | 8.6e-11 |
+2) With known variance, we use the standard normal distribution (Z) instead of t:
+   - Z = (x̄₂ - x̄₁)/SE = 1.069355/0.6708 = 1.593
 
-**Final results**:
-- Largest eigenvalue: λ = 5.2143197430
-- Corresponding eigenvector: [0.397, 0.521, 0.756]
+3) P-value:
+   - p-value = 2 × P(Z > 1.593) ≈ 0.111
 
-### Verification
+4) 90% confidence interval:
+   - z₀.₉₅ = 1.6449
+   - 90% CI = 1.069355 ± 1.6449 × 0.6708 = 1.069355 ± 1.103419 = (-0.034, 2.173)
 
-The eigenvector relation Ax = λx should hold:
-- A × x = [2.071, 2.715, 3.941]
-- λ × x = [2.071, 2.715, 3.941]
-
-The close match confirms our result.
-
-### What This Means
-
-1. **Eigenvalue interpretation**: λ = 5.21 is the maximum "stretching factor" of the matrix
-
-2. **Eigenvector interpretation**: When the matrix A acts on any vector, the component in the direction [0.397, 0.521, 0.756] will eventually dominate
-
-3. **Practical example**:
-   - If A represents a network of nodes with connections
-   - The dominant eigenvector components show the "importance" of each node
-   - This is the principle behind PageRank in search engines
-
-4. **Convergence speed**: The ratio |λ₂/λ₁| ≈ 0.37 in this case, explaining the quick convergence in just 13 iterations
-
-## Summary
-
-1. **Direct vs. Iterative methods**:
-   - Gaussian elimination: O(n³), exact, good for dense matrices
-   - Jacobi & Gauss-Seidel: O(kn²) for k iterations, better for sparse systems
-
-2. **Method selection guide**:
-   - Is matrix sparse? → Consider iterative methods
-   - Need high precision? → Use direct methods
-   - Parallel computing environment? → Consider Jacobi
-   - Sequential computing? → Gauss-Seidel often better
-
-3. **Condition number importance**:
-   - Rule of thumb: log₁₀(κ) = digits of precision lost
-   - Condition number grows with:
-     - Matrix size
-     - Matrix complexity
-     - Near-linear dependencies between rows/columns
-
-4. **Eigenvalue applications**:
-   - Dynamic systems: predict long-term behavior
-   - Stability analysis: all eigenvalues must have magnitude < 1
-   - Principal Component Analysis: eigenvalues represent variance in each direction
-
+**Statistical Connection:** This demonstrates how prior information changes our statistical approach - from a t-test to a z-test. Interestingly, despite using a z-test (which is typically more powerful), the standard error increases from 0.5874 to 0.6708 because the assumed variance (1) is larger than the estimated pooled variance (0.767). This illustrates how assumptions affect statistical results, sometimes in counter-intuitive ways.
