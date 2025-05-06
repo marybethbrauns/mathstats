@@ -1,4 +1,4 @@
-# Marybeth Brauns | Numerical Analysis Final 
+# Marybeth Brauns | Numerical Analysis Final
 
 ## Problem 1: Polynomial Interpolation with Chebyshev Nodes
 
@@ -74,6 +74,8 @@ $$P_4(x) = 0.0423 \cdot \ell_0(x) + 0.1038 \cdot \ell_1(x) + 1.0000 \cdot \ell_2
 
 #### Step 4: Error Analysis and Convergence Behavior
 
+**Figure 1: Mitigating Runge's Phenomenon with Chebyshev Nodes** (polynomial_interpolation_chebyshev_runge_mitigation.png) demonstrates how polynomial interpolation using Chebyshev nodes effectively approximates our target function. This figure clearly shows how the Chebyshev interpolants of degrees 4, 6, 8, and 10 progressively improve the approximation to $f(x) = \frac{1}{1+25x^2}$, with minimal oscillations near the boundaries.
+
 After computing the interpolation polynomials for each degree and evaluating them on a fine grid of points, the maximum errors (rounded to three significant figures) are:
 
 | $n$ | Maximum Error $\|P_n-f\|_\infty$ |
@@ -90,7 +92,9 @@ The error reduction ratios between successive degrees show consistent improvemen
 
 This consistent error reduction of approximately 35% with each increase of 2 in the polynomial degree demonstrates the predictable convergence behavior of Chebyshev interpolation.
 
-For comparison, the maximum error using equidistant nodes for $n = 10$ is approximately 0.582, more than 5 times larger than with Chebyshev nodes (0.109). This dramatic improvement highlights the power of optimal node placement.
+**Figure 2: Equioscillation Pattern in Chebyshev Error Distribution** (chebyshev_interpolation_error_equioscillation_analysis.png) reveals a key property of Chebyshev interpolation: the error oscillates with nearly equal magnitude across the interval, with approximately n+1 peaks of similar height. This "equioscillation" property is a hallmark of minimax approximation.
+
+For comparison, **Figure 3: Dramatic Error Reduction with Chebyshev Nodes vs. Equidistant Nodes** (chebyshev_vs_equidistant_nodes_error_comparison.png) shows that the maximum error using equidistant nodes for $n = 10$ is approximately 0.582, more than 5 times larger than with Chebyshev nodes (0.109). This figure dramatically illustrates the superiority of Chebyshev nodes, particularly highlighting the extreme error near the boundaries when using equidistant nodes (Runge's phenomenon) compared to the controlled error with Chebyshev nodes.
 
 #### Theoretical Explanation of Error Behavior
 
@@ -100,19 +104,19 @@ $$f(x) - P_n(x) = \frac{f^{(n+1)}(\xi_x)}{(n+1)!} \prod_{j=0}^{n} (x - x_j)$$
 
 where $\xi_x$ is some point in the interval. The product term $\prod_{j=0}^{n} (x - x_j)$ is minimized (in the max-norm sense) when the nodes are Chebyshev points. This minimization occurs because the product closely resembles the Chebyshev polynomial $T_{n+1}(x)$, which has the equioscillation property.
 
-The equioscillation property means that the error oscillates with nearly equal magnitude across the interval, rather than being concentrated at the endpoints (as occurs with equidistant nodes). This property is confirmed by our error plots, which show approximately $n+1$ peaks of similar magnitude across the interval.
+The equioscillation property means that the error oscillates with nearly equal magnitude across the interval, rather than being concentrated at the endpoints (as occurs with equidistant nodes). This property is confirmed by our error plots in Figure 2, which show approximately $n+1$ peaks of similar magnitude across the interval.
 
 #### Visual Analysis and Practical Implications
 
-The visualization of these interpolants demonstrates several key insights:
+The visualization of these interpolants in Figures 1-3 demonstrates several key insights:
 
-1. **Runge's Phenomenon Mitigation**: Unlike interpolation with equidistant nodes, the Chebyshev interpolants show minimal oscillatory behavior near the endpoints.
+1. **Runge's Phenomenon Mitigation**: Figure 1 clearly shows that unlike interpolation with equidistant nodes, the Chebyshev interpolants show minimal oscillatory behavior near the endpoints.
 
-2. **Challenge Regions**: The steepest gradient regions near x = ±0.2 show the most significant approximation challenges, requiring higher-degree polynomials to capture accurately.
+2. **Challenge Regions**: Figure 1 reveals that the steepest gradient regions near x = ±0.2 show the most significant approximation challenges, requiring higher-degree polynomials to capture accurately.
 
-3. **Practical Efficiency**: The strategic placement of Chebyshev nodes achieves significantly better approximation quality than increasing the number of equidistant nodes, demonstrating that node distribution can be more important than node quantity.
+3. **Practical Efficiency**: Figure 3 demonstrates that the strategic placement of Chebyshev nodes achieves significantly better approximation quality than increasing the number of equidistant nodes, showing that node distribution can be more important than node quantity.
 
-4. **Theoretical Optimality**: The nearly uniform distribution of error peaks across the interval visually confirms the minimax property of Chebyshev approximation.
+4. **Theoretical Optimality**: Figure 2 visually confirms the nearly uniform distribution of error peaks across the interval, validating the minimax property of Chebyshev approximation.
 
 This analysis underscores why Chebyshev nodes are the standard choice for polynomial interpolation and approximation in practical applications.
 
@@ -280,6 +284,24 @@ The RK4 method achieves fourth-order accuracy by matching the Taylor series expa
 The local truncation error of RK4 is $O(h^5)$, which accumulates to a global error of $O(h^4)$. This rapid error decrease with decreasing h makes RK4 remarkably efficient for smooth problems like this one.
 
 The high accuracy of RK4 stems from its sophisticated design that samples the function at carefully chosen intermediate points within each step. These points are combined with specific weights that cancel out lower-order error terms in the Taylor expansion.
+
+#### Enhanced Explanation of Figures 4-5
+
+**Figure 4: Comparative Performance of Numerical ODE Solution Methods** (numerical_ode_methods_comparative_performance.png) provides a visual comparison of all numerical solutions alongside the exact solution. Key visual features include:
+
+- The exact solution (black curve) shows a steadily increasing trajectory that accelerates slightly due to the exponential component
+- Euler's method with h=0.2 (red) significantly underestimates the exact solution, with visible separation increasing with distance from the initial point
+- Euler's method with h=0.1 (green) improves accuracy but still shows noticeable deviation
+- The trapezoidal method (blue) and RK4 method (magenta) both track the exact solution so closely they're almost indistinguishable visually
+- The table inset quantifies the terminal errors, highlighting the dramatic accuracy differences despite using identical step sizes
+
+**Figure 5: Order-of-Convergence Analysis for Numerical Methods** (numerical_methods_convergence_order_error_analysis.png) reveals a fascinating error behavior pattern that might initially appear unusual but is mathematically correct. The steep initial segments followed by more gradual slopes are not visualization errors but rather showcase a key property of this particular ODE:
+
+1. The steep initial segments occur because the "y" term in the equation (y' = y - x² + 1) initially dominates, causing exponential error amplification
+2. As x increases, the -x² term becomes increasingly influential and has a stabilizing effect on error growth
+3. This changing balance between terms causes the error growth rate to change from initially steep to more gradual
+
+This pattern is most pronounced for Euler methods and least noticeable for RK4, directly reflecting how higher-order methods better control error accumulation through the integration domain. The approximately straight-line portions of each curve (especially visible for Euler) confirm the theoretical convergence order, as a straight line on a logarithmic scale indicates exponential growth at the predicted rate.
 
 #### f) Comprehensive Method Comparison and Analysis
 
@@ -455,6 +477,18 @@ With $h = 0.1$, we are still outside the stability region (h > 0.04):
 | 0.5 | 1.3570                    | -2551.5000  | 2552.8570|
 | 1.0 | 1.3818                    | Diverged    | —     |
 
+#### Enhanced Explanation of Figure 6
+
+**Figure 6: Effect of λ and Step Size on Numerical Stability** (stiffness_parameter_impact_numerical_stability_analysis.png) dramatically illustrates all four cases. The figure clearly shows the catastrophic instability for both λ = -50 cases, where the solutions rapidly diverge from the exact solution.
+
+The most striking visual feature of this figure is the nearly vertical blue line segments for the λ = -50, h = 0.5 case. These are not visualization errors but rather accurate representations of the enormous jumps in the solution values that occur when the stability condition is violated. Each step multiplies the previous value by approximately -24, creating these dramatic vertical segments as the solution alternates in sign while growing exponentially in magnitude.
+
+Similarly, the purple line (λ = -50, h = 0.1) also shows steep initial growth as the solution quickly diverges, though at a somewhat slower rate due to the smaller step size. The amplification factor in this case is |1 - 5| = 4, still well above the stability threshold of 1.
+
+The shaded red region in the figure marks where the divergence becomes too extreme to display on the scale of the plot, visually emphasizing the clear boundary between computational feasibility and failure.
+
+In contrast, both λ = -1 cases remain bounded throughout the domain, though with noticeable differences in accuracy. The h = 0.5 case (red line) shows significant deviation from the exact solution, while the h = 0.1 case (green line) follows it much more closely.
+
 #### Comprehensive Explanation of Stability Violation
 
 Contrary to the previous analysis, the solution with λ = -50 and h = 0.1 does not remain stable. As predicted by stability theory where |1 + hλ| = |1 - 5| = 4 > 1, the Euler method diverges rapidly. The solution alternates in sign with each step while growing exponentially in magnitude, precisely as the stability analysis predicts.
@@ -556,6 +590,18 @@ $$|R(iy)|^2 = \frac{|1 + i\frac{y}{2}|^2}{|1 - i\frac{y}{2}|^2} = \frac{1^2 + (\
 
 This confirms that the boundary of the stability region is exactly the imaginary axis.
 
+#### Enhanced Explanation of Figure 7
+
+**Figure 7: A-Stability of the Trapezoidal Method** (trapezoidal_method_a_stability_complex_plane_analysis.png) provides a striking visual representation of the method's exceptional stability properties. The figure has several important features that merit explanation:
+
+1. **Complete Left Half-Plane**: The blue-shaded region covering the entire left half of the complex plane illustrates that the trapezoidal method is A-stable. This means that for any problem whose eigenvalues have negative real parts, the method will be unconditionally stable regardless of step size.
+
+2. **Imaginary Axis Boundary**: The black contour line along the imaginary axis represents where |R(z)| = 1 exactly. This means that for pure oscillatory problems (with eigenvalues on the imaginary axis), the trapezoidal method preserves the amplitude of oscillations perfectly.
+
+3. **Comparison with Euler's Method**: The red curve shows Euler's stability region for comparison – a small circle of radius 1 centered at (-1,0). This dramatic contrast explains why explicit methods like Euler often require impractically small steps for stiff problems, while the trapezoidal method remains stable with any step size.
+
+The subtitle "Entire Left Half-Plane Is Stable" emphasizes the most significant property of the trapezoidal method. This feature makes it particularly valuable for stiff differential equations, where the range of time scales in the problem would otherwise force explicit methods to use extremely small step sizes.
+
 #### Theoretical Significance and Practical Implications
 
 The stability analysis reveals that the trapezoidal method is **A-stable**, meaning its stability region includes the entire left half of the complex plane. This has profound implications for numerical ODE solving:
@@ -574,19 +620,19 @@ This analysis demonstrates why the trapezoidal method is a cornerstone of numeri
 
 ## Conclusion: Comprehensive Analysis of Numerical Methods
 
-This detailed analysis has explored four fundamental aspects of numerical analysis, providing both theoretical understanding and practical insights:
+This detailed analysis has explored four fundamental aspects of numerical analysis, providing both theoretical understanding and practical insights, with key findings visualized across seven figures:
 
-1. **Polynomial Interpolation with Chebyshev Nodes**:
-   We demonstrated how strategic node placement dramatically improves approximation quality. Chebyshev nodes, with their elegant mathematical properties, effectively control Runge's phenomenon through their clustering near interval endpoints. The nearly equioscillating error distribution and the consistent error reduction of approximately 35% between successive degrees confirmed the minimax optimality of these approximations. This analysis highlights a critical principle in approximation theory: optimal node distribution can be more important than increasing the number of nodes.
+1. **Polynomial Interpolation with Chebyshev Nodes (Figures 1-3)**:
+   We demonstrated how strategic node placement dramatically improves approximation quality. Chebyshev nodes, with their elegant mathematical properties, effectively control Runge's phenomenon through their clustering near interval endpoints. Figure 2 reveals the nearly equioscillating error distribution with approximately n+1 peaks of similar magnitude, confirming the minimax property of Chebyshev approximation. Figure 3 dramatically demonstrates the superior performance of Chebyshev nodes over equidistant nodes by a factor of more than 5. This analysis highlights a critical principle in approximation theory: optimal node distribution can be more important than increasing the number of nodes.
 
-2. **ODE Solution Methods Comparison**:
-   The comparative analysis of Euler, trapezoidal, and RK4 methods illuminated the fundamental trade-offs between computational cost, accuracy, and implementation complexity. The results verified theoretical convergence rates and demonstrated why higher-order methods like RK4 offer superior efficiency despite higher per-step costs. For the smoothly varying test problem, RK4 achieved machine precision accuracy with just 10 steps, while Euler would require thousands of steps for comparable precision. This reinforces why method selection should consider both the nature of the problem and the accuracy requirements.
+2. **ODE Solution Methods Comparison (Figures 4-5)**:
+   The comparative analysis of Euler, trapezoidal, and RK4 methods illuminated the fundamental trade-offs between computational cost, accuracy, and implementation complexity. Figure 4 visually confirms the theoretical convergence rates by showing how closely each method tracks the exact solution. Figure 5 provides a quantitative error analysis with its distinctive "steep-then-leveling" pattern arising from the changing balance between terms in the ODE. This behavior, correctly represented in the visualization, demonstrates why higher-order methods like RK4 offer superior efficiency despite higher per-step costs. For the smoothly varying test problem, RK4 achieved machine precision accuracy with just 10 steps, while Euler would require thousands of steps for comparable precision.
 
-3. **Effect of λ on IVP Stability**:
-   The stability analysis with varying λ values provided crucial insights into numerical stability. The cases with λ = -50 demonstrated catastrophic instability when the stability condition was violated, confirming the necessity of the theoretical condition h ≤ -2/λ for explicit Euler. These results highlight the fundamental challenges posed by stiff systems and explain why specialized methods are often required for such problems.
+3. **Effect of λ on IVP Stability (Figure 6)**:
+   The stability analysis with varying λ values provided crucial insights into numerical stability. Figure 6 dramatically illustrates how both λ = -50 cases demonstrate catastrophic instability as predicted by theory, with near-vertical line segments representing enormous jumps in the solution values. These visual characteristics are not errors but accurate representations of the mathematical behavior of stiff equations when the stability condition is violated. The results confirm that the theoretical stability condition h ≤ -2/λ is indeed necessary for explicit Euler, and not overly conservative as previously suggested.
 
-4. **Stability Region for the Trapezoidal Method**:
-   The rigorous derivation of the trapezoidal method's stability region demonstrated its A-stability property—stability for all problems with eigenvalues having negative real parts, regardless of step size. This unbounded stability region makes the trapezoidal method particularly valuable for stiff problems where explicit methods would require impractically small steps. The analysis also revealed the method's conservation properties along the imaginary axis, explaining its suitability for oscillatory problems.
+4. **Stability Region for the Trapezoidal Method (Figure 7)**:
+   The rigorous derivation of the trapezoidal method's stability region is visually confirmed in Figure 7, which clearly demonstrates its A-stability property—stability for all problems with eigenvalues having negative real parts, regardless of step size. The dramatic contrast between the trapezoidal method's unbounded stability region and Euler's limited circle explains why implicit methods are preferred for stiff problems. The figure illustrates the method's conservation properties along the imaginary axis, explaining its suitability for oscillatory problems.
 
 These analyses collectively demonstrate how theoretical mathematical principles translate directly into practical computational behavior. Understanding these principles enables informed selection and implementation of numerical methods, balancing accuracy, stability, and computational efficiency based on problem characteristics.
 
