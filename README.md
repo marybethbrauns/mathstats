@@ -1,4 +1,4 @@
-# Marybeth Brauns | Numerical Analysis Final (Comprehensive Analysis with Corrected Results)
+# Marybeth Brauns | Numerical Analysis Final 
 
 ## Problem 1: Polynomial Interpolation with Chebyshev Nodes
 
