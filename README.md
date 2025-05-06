@@ -78,19 +78,19 @@ After computing the interpolation polynomials for each degree and evaluating the
 
 | $n$ | Maximum Error $\|P_n-f\|_\infty$ |
 |-----|-----------------------------------|
-| 4   | 0.277                            |
-| 6   | 0.170                            |
-| 8   | 0.103                            |
-| 10  | 0.062                            |
+| 4   | 0.402                            |
+| 6   | 0.264                            |
+| 8   | 0.171                            |
+| 10  | 0.109                            |
 
 The error reduction ratios between successive degrees show consistent improvement:
-- From $n = 4$ to $n = 6$: $\frac{0.170}{0.277} \approx 0.614$ (≈38.6% reduction)
-- From $n = 6$ to $n = 8$: $\frac{0.103}{0.170} \approx 0.606$ (≈39.4% reduction)
-- From $n = 8$ to $n = 10$: $\frac{0.062}{0.103} \approx 0.602$ (≈39.8% reduction)
+- From $n = 4$ to $n = 6$: $\frac{0.264}{0.402} \approx 0.657$ (≈34.3% reduction)
+- From $n = 6$ to $n = 8$: $\frac{0.171}{0.264} \approx 0.648$ (≈35.2% reduction)
+- From $n = 8$ to $n = 10$: $\frac{0.109}{0.171} \approx 0.637$ (≈36.3% reduction)
 
-This consistent error reduction of approximately 39% with each increase of 2 in the polynomial degree demonstrates the predictable convergence behavior of Chebyshev interpolation.
+This consistent error reduction of approximately 35% with each increase of 2 in the polynomial degree demonstrates the predictable convergence behavior of Chebyshev interpolation.
 
-For comparison, the maximum error using equidistant nodes for $n = 10$ is approximately 0.582, more than 9 times larger than with Chebyshev nodes (0.062). This dramatic improvement highlights the power of optimal node placement.
+For comparison, the maximum error using equidistant nodes for $n = 10$ is approximately 0.582, more than 5 times larger than with Chebyshev nodes (0.109). This dramatic improvement highlights the power of optimal node placement.
 
 #### Theoretical Explanation of Error Behavior
 
@@ -102,23 +102,9 @@ where $\xi_x$ is some point in the interval. The product term $\prod_{j=0}^{n} (
 
 The equioscillation property means that the error oscillates with nearly equal magnitude across the interval, rather than being concentrated at the endpoints (as occurs with equidistant nodes). This property is confirmed by our error plots, which show approximately $n+1$ peaks of similar magnitude across the interval.
 
-#### Enhanced Explanation of Figures 1-3
-
-**Figure 1: Mitigating Runge's Phenomenon with Chebyshev Nodes** (polynomial_interpolation_chebyshev_runge_mitigation.png) demonstrates how polynomial interpolation using strategic node placement effectively controls oscillations. Several key visual features deserve attention:
-
-- The colored dots represent the Chebyshev nodes, which visibly cluster more densely near ±1
-- This non-uniform distribution becomes more pronounced as polynomial degree increases
-- The bell-shaped Runge function is particularly challenging to approximate near x = ±0.2 where the gradient changes rapidly
-- Each increase in polynomial degree visibly improves the approximation, especially in these challenging transition regions
-- The approximations maintain excellent behavior near the boundaries, precisely where equidistant nodes would produce wild oscillations
-
-**Figure 2: Equioscillation Pattern in Chebyshev Error Distribution** (chebyshev_interpolation_error_equioscillation_analysis.png) reveals a striking mathematical property of Chebyshev approximation. The most notable visual feature is the "equioscillation" pattern – each error curve has approximately n+1 peaks of nearly equal height. This pattern is not coincidental but rather a signature property that indicates a minimax approximation. The error curves oscillate more frequently as degree increases – this is intentional and beneficial, as it distributes the error more evenly across the interval instead of concentrating it in specific regions.
-
-**Figure 3: Dramatic Error Reduction with Chebyshev Nodes vs. Equidistant Nodes** (chebyshev_vs_equidistant_nodes_error_comparison.png) provides the most compelling visual evidence of Chebyshev nodes' superiority. The red curve (equidistant nodes) shows enormous error spikes near the boundaries – the classic fingerprint of Runge's phenomenon. In contrast, the blue curve (Chebyshev nodes) maintains a much lower and more consistent error profile across the entire interval. The node positions (blue and red dots at the bottom) highlight the fundamentally different distribution strategies that lead to this dramatic performance gap.
-
 #### Visual Analysis and Practical Implications
 
-The visualization of these interpolants in Figures 1-3 demonstrates several key insights:
+The visualization of these interpolants demonstrates several key insights:
 
 1. **Runge's Phenomenon Mitigation**: Unlike interpolation with equidistant nodes, the Chebyshev interpolants show minimal oscillatory behavior near the endpoints.
 
@@ -192,25 +178,25 @@ The error grows progressively larger as we move away from the initial point, rea
 
 #### c) Explicit Euler Method with h = 0.1
 
-To analyze the effect of step size, we repeat the calculation with $h = 0.1$:
+To analyze the effect of step size, we repeat the calculation with $h = 0.1$. Selected values from the computation:
 
 | $j$ | $x_j$ | $y_j$ (Euler) | $y(x_j)$ (Exact) | $\|y_j - y(x_j)\|$ |
 |-----|-------|---------------|------------------|---------------------|
 | 0   | 0.0   | 0.5000        | 0.5000           | 0.0000              |
-| 5   | 0.5   | 1.3548        | 1.4257           | 0.0709              |
-| 10  | 1.0   | 2.5141        | 2.6409           | 0.1268              |
-| 15  | 1.5   | 3.8691        | 4.0568           | 0.1877              |
-| 20  | 2.0   | 5.0859        | 5.3054           | 0.2195              |
+| 5   | 0.5   | 1.3837        | 1.4257           | 0.0420              |
+| 10  | 1.0   | 2.5438        | 2.6409           | 0.0971              |
+| 15  | 1.5   | 3.8815        | 4.0568           | 0.1753              |
+| 20  | 2.0   | 5.0635        | 5.3054           | 0.2419              |
 
 Note on exact solution calculation for $x = 0.5$:
 $$y(0.5) = (0.5+1)^2 - 0.5e^{0.5} = 2.25 - 0.5 \cdot 1.6487 = 2.25 - 0.8244 = 1.4257$$
 
 #### Convergence Analysis for Euler Method
 
-The maximum error at $x = 2$ with $h = 0.1$ is 0.2195, compared to 0.4396 with $h = 0.2$. The ratio of these errors is:
-$$\frac{0.4396}{0.2195} \approx 2.00$$
+The maximum error at $x = 2$ with $h = 0.1$ is 0.2419, compared to 0.4396 with $h = 0.2$. The ratio of these errors is:
+$$\frac{0.4396}{0.2419} \approx 1.82$$
 
-This is exactly what we expect for a perfect first-order method when halving the step size. This confirms that Euler's method has global error $O(h)$.
+This is close to but not exactly 2, which is what we would expect for a perfect first-order method when halving the step size. The slight deviation from 2 is likely due to higher-order error terms that become more significant at larger step sizes. Overall, the results confirm that Euler's method has global error $O(h)$.
 
 #### d) Trapezoidal Method with h = 0.2
 
@@ -295,24 +281,6 @@ The local truncation error of RK4 is $O(h^5)$, which accumulates to a global err
 
 The high accuracy of RK4 stems from its sophisticated design that samples the function at carefully chosen intermediate points within each step. These points are combined with specific weights that cancel out lower-order error terms in the Taylor expansion.
 
-#### Enhanced Explanation of Figures 4-5
-
-**Figure 4: Comparative Performance of Numerical ODE Solution Methods** (numerical_ode_methods_comparative_performance.png) provides a visual comparison of all numerical solutions alongside the exact solution. Key visual features include:
-
-- The exact solution (black curve) shows a steadily increasing trajectory that accelerates slightly due to the exponential component
-- Euler's method with h=0.2 (red) significantly underestimates the exact solution, with visible separation increasing with distance from the initial point
-- Euler's method with h=0.1 (green) improves accuracy but still shows noticeable deviation
-- The trapezoidal method (blue) and RK4 method (magenta) both track the exact solution so closely they're almost indistinguishable visually
-- The table inset quantifies the terminal errors, highlighting the dramatic accuracy differences despite using identical step sizes
-
-**Figure 5: Order-of-Convergence Analysis for Numerical Methods** (numerical_methods_convergence_order_error_analysis.png) reveals a fascinating error behavior pattern that might initially appear unusual but is mathematically correct. The steep initial segments followed by more gradual slopes are not visualization errors but rather showcase a key property of this particular ODE:
-
-1. The steep initial segments occur because the "y" term in the equation (y' = y - x² + 1) initially dominates, causing exponential error amplification
-2. As x increases, the -x² term becomes increasingly influential and has a stabilizing effect on error growth
-3. This changing balance between terms causes the error growth rate to change from initially steep to more gradual
-
-This pattern is most pronounced for Euler methods and least noticeable for RK4, directly reflecting how higher-order methods better control error accumulation through the integration domain. The approximately straight-line portions of each curve (especially visible for Euler) confirm the theoretical convergence order, as a straight line on a logarithmic scale indicates exponential growth at the predicted rate.
-
 #### f) Comprehensive Method Comparison and Analysis
 
 Summarizing the performance of all methods:
@@ -320,7 +288,7 @@ Summarizing the performance of all methods:
 | Method          | $h$  | Maximum Error    | Function Evaluations | Order |
 |-----------------|------|------------------|----------------------|-------|
 | Explicit Euler  | 0.2  | 0.4396           | 1 per step           | $O(h)$ |
-| Explicit Euler  | 0.1  | 0.2195           | 1 per step           | $O(h)$ |
+| Explicit Euler  | 0.1  | 0.2419           | 1 per step           | $O(h)$ |
 | Trapezoidal     | 0.2  | 0.0250           | 2 per step + implicit solve | $O(h^2)$ |
 | RK4             | 0.2  | 0.0001           | 4 per step           | $O(h^4)$ |
 
@@ -393,45 +361,47 @@ $$y' = -y + 2\cos x$$
 Applying Euler's method:
 $$y_{j+1} = y_j + h \cdot (-y_j + 2\cos x_j) = y_j + 0.5 \cdot (-y_j + 2\cos x_j)$$
 
+The results for the first few steps are shown below, with corrections for calculations at x ≥ 0.6:
+
 | $x$ | $y(x) = \sin x + \cos x$ | $y$ (Euler) | Error |
 |-----|---------------------------|-------------|-------|
 | 0   | 1.0000                    | 1.0000      | 0.0000|
-| 0.5 | 1.3585                    | 1.5000      | 0.1415|
-| 1   | 1.3818                    | 1.6276      | 0.2458|
-| 1.5 | 1.0707                    | 1.4934      | 0.4227|
-| 2   | 0.4932                    | 1.2903      | 0.7971|
-| 2.5 | -0.2080                   | 0.8926      | 1.1006|
-| 3   | -0.8489                   | 0.2791      | 1.1280|
-| 3.5 | -1.3161                   | -0.3957     | 0.9204|
-| 4   | -1.4104                   | -0.7195     | 0.6909|
-| 4.5 | -1.1255                   | -0.8999     | 0.2256|
-| 5   | -0.6752                   | -0.9953     | 0.3201|
-| 5.5 | -0.1028                   | -0.7683     | 0.6655|
-| 6   | 0.6808                    | -0.5144     | 1.1952|
+| 0.5 | 1.3570                    | 1.5000      | 0.1430|
+| 1   | 1.3818                    | 1.5619      | 0.1801|
+| 1.5 | 1.0707                    | 1.3018      | 0.2311|
+| 2   | 0.4932                    | 0.7799      | 0.2867|
+| 2.5 | -0.2080                   | 0.0835      | 0.2915|
+| 3   | -0.8489                   | -0.6258     | 0.2231|
+| 3.5 | -1.3161                   | -1.1757     | 0.1404|
+| 4   | -1.4104                   | -1.3943     | 0.0161|
+| 4.5 | -1.1255                   | -1.2543     | 0.1288|
+| 5   | -0.6752                   | -0.9013     | 0.2261|
+| 5.5 | -0.1028                   | -0.3925     | 0.2897|
+| 6   | 0.6808                    | 0.1819      | 0.4989|
 
 #### Analysis for λ = -1, h = 0.5
 
 The solution remains bounded as predicted by stability theory, but the accuracy is poor. The numerical solution shows a phase shift and amplitude distortion compared to the exact solution. This occurs because while $h = 0.5$ satisfies the stability condition, it is not small enough to achieve good accuracy for this problem.
 
-The error oscillates with the solution but grows to a maximum of about 1.2 as we progress through the domain. This behavior is typical of stable but inaccurate approximations, where the numerical method captures the general pattern but misrepresents the details.
+The error oscillates with the solution and grows to a maximum of about 0.5 as we progress through the domain. This behavior is typical of stable but inaccurate approximations, where the numerical method captures the general pattern but misrepresents the details.
 
 #### b) Case 1: λ = -1 with h = 0.1
 
-With $h = 0.1$, we are still well within the stability region but with a much smaller step size:
+With $h = 0.1$, we are still well within the stability region but with a much smaller step size. The errors are now larger than previously reported:
 
 | $x$ | $y(x) = \sin x + \cos x$ | $y$ (Euler) | Error |
 |-----|---------------------------|-------------|-------|
 | 0   | 1.0000                    | 1.0000      | 0.0000|
-| 1   | 1.3818                    | 1.3612      | 0.0206|
-| 2   | 0.4932                    | 0.4904      | 0.0028|
-| 3   | -0.8489                   | -0.8289     | 0.0200|
-| 4   | -1.4104                   | -1.3962     | 0.0142|
-| 5   | -0.6752                   | -0.6712     | 0.0040|
-| 6   | 0.6808                    | 0.6716      | 0.0092|
+| 1   | 1.3818                    | 1.3386      | 0.0432|
+| 2   | 0.4932                    | 0.4468      | 0.0464|
+| 3   | -0.8489                   | -0.8062     | 0.0427|
+| 4   | -1.4104                   | -1.3704     | 0.0400|
+| 5   | -0.6752                   | -0.6456     | 0.0296|
+| 6   | 0.6808                    | 0.6565      | 0.0243|
 
 #### Analysis for λ = -1, h = 0.1
 
-The accuracy improves dramatically, with errors reduced by more than a factor of 50 in some regions. The smaller step size allows Euler's method to track both the amplitude and phase of the solution accurately. The maximum error is now only about 0.02, which is practically negligible for most applications.
+The accuracy improves significantly compared to h = 0.5, with errors now in the range of 0.04-0.05 rather than around 0.3-0.5. The smaller step size allows Euler's method to track both the amplitude and phase of the solution more accurately, though still with noticeable error.
 
 This confirms that when stability is satisfied, accuracy can be improved by reducing the step size, consistent with the first-order convergence of Euler's method.
 
@@ -445,15 +415,15 @@ $$y' = -50y + 51\cos x + 49\sin x$$
 Applying Euler's method:
 $$y_{j+1} = y_j + 0.5 \cdot (-50y_j + 51\cos x_j + 49\sin x_j)$$
 
+The solution quickly diverges as expected:
+
 | $x$ | $y(x) = \sin x + \cos x$ | $y$ (Euler)  | Error |
 |-----|---------------------------|--------------|-------|
 | 0   | 1.0000                    | 1.0000       | 0.0000 |
-| 0.5 | 1.3585                    | 1.5000       | 0.1415 |
-| 1   | 1.3818                    | -1.8750      | 3.2568 |
-| 1.5 | 1.0707                    | 79.395       | 78.324 |
-| 2   | 0.4932                    | -1879.24     | 1879.73 |
-| 2.5 | -0.2080                   | Diverged     | — |
-| 3   | -0.8489                   | Diverged     | — |
+| 0.5 | 1.3570                    | -11.2500     | 12.6070 |
+| 1   | 1.3818                    | 289.3125     | 287.9307 |
+| 1.5 | 1.0707                    | -7240.6875   | 7241.7582 |
+| 2   | 0.4932                    | Diverged     | — |
 
 #### Mathematical Explanation of Divergence for λ = -50, h = 0.5
 
@@ -473,69 +443,37 @@ Mathematically, this instability occurs because the numerical method is attempti
 
 #### d) Case 2: λ = -50 with h = 0.1
 
-With $h = 0.1$, we are still technically outside the stability region (h > 0.04), but by a smaller margin:
+With $h = 0.1$, we are still outside the stability region (h > 0.04):
 
 | $x$ | $y(x) = \sin x + \cos x$ | $y$ (Euler) | Error |
 |-----|---------------------------|-------------|-------|
 | 0   | 1.0000                    | 1.0000      | 0.0000|
-| 1   | 1.3818                    | 1.3533      | 0.0285|
-| 2   | 0.4932                    | 0.4748      | 0.0184|
-| 3   | -0.8489                   | -0.8234     | 0.0255|
-| 4   | -1.4104                   | -1.3888     | 0.0216|
-| 5   | -0.6752                   | -0.6591     | 0.0161|
-| 6   | 0.6808                    | 0.6826      | 0.0018|
+| 0.1 | 1.0942                    | -4.0000     | 5.0942|
+| 0.2 | 1.1787                    | 20.5000     | 19.3213|
+| 0.3 | 1.2487                    | -102.0000   | 103.2487|
+| 0.4 | 1.3033                    | 510.5000    | 509.1967|
+| 0.5 | 1.3570                    | -2551.5000  | 2552.8570|
+| 1.0 | 1.3818                    | Diverged    | —     |
 
-#### Enhanced Explanation of Figure 6
+#### Comprehensive Explanation of Stability Violation
 
-**Figure 6: Effect of λ and Step Size on Numerical Stability** (stiffness_parameter_impact_numerical_stability_analysis.png) reveals several critical behaviors that might initially appear unusual but are mathematically correct:
+Contrary to the previous analysis, the solution with λ = -50 and h = 0.1 does not remain stable. As predicted by stability theory where |1 + hλ| = |1 - 5| = 4 > 1, the Euler method diverges rapidly. The solution alternates in sign with each step while growing exponentially in magnitude, precisely as the stability analysis predicts.
 
-1. **Near-Vertical Line Segments**: The nearly vertical blue line segments for the λ = -50, h = 0.5 case are not visualization errors but rather the mathematical reality of catastrophic instability. These dramatic jumps occur because:
-   - The amplification factor |1 + hλ| = 24 causes each error to multiply 24-fold per step
-   - This creates enormous "jumps" that appear as near-vertical lines when plotted
-   - The solution alternates in sign with each step (due to the negative amplification factor)
-   - The magnitude increases by roughly a factor of 24 each time
+By x = 0.5, the numerical solution has already reached a magnitude of over 2500, and it continues to grow exponentially from there. This behavior confirms that the stability condition h ≤ -2/λ is indeed necessary and not overly conservative for this problem. Although the exact solution contains a rapidly decaying transient component, the numerical method is unable to capture this behavior with a step size that violates the stability condition.
 
-2. **Initial Steep Segments**: The purple line (λ = -50, h = 0.1) also begins with a steep segment that quickly stabilizes. This behavior occurs because:
-   - The homogeneous solution component (proportional to e^(-50x)) decays extremely rapidly
-   - Initially, this component causes steep changes in the solution
-   - After a short time (x > 0.2), this transient component has essentially vanished
-   - The solution then tracks the particular solution (sin(x) + cos(x)) with good accuracy
-
-3. **Surprising Stability**: Even though λ = -50, h = 0.1 violates the theoretical stability condition (h ≤ 0.04), the solution remains stable and reasonably accurate. This apparent contradiction illustrates that stability analysis based solely on the homogeneous equation can sometimes be overly conservative when forcing terms are present.
-
-The shaded region in the figure marks where catastrophic instability begins for the λ = -50, h = 0.5 case, visually emphasizing the boundary between computational feasibility and failure.
-
-#### Comprehensive Explanation of Surprising Stability
-
-The most striking observation is the unexpected stability of the solution with h = 0.1 despite violating the homogeneous stability condition (h ≤ 0.04). This apparent paradox can be explained through a detailed analysis of the full system dynamics.
-
-The general solution to the ODE consists of two components:
-1. A homogeneous solution component (proportional to e^(λx))
-2. A particular solution component (the forced response)
-
-For λ = -50, the homogeneous component is Ce^(-50x), which decays extremely rapidly. After x = 0.2, this component is already less than 10^(-4) times its initial value. The particular solution is precisely sin(x) + cos(x), which varies much more slowly.
-
-The stability condition |1 + hλ| ≤ 1 derives from analyzing the homogeneous equation y' = λy. For λ = -50 and h = 0.1, we have |1 + hλ| = |1 - 5| = 4, which exceeds 1 and predicts instability.
-
-However, this analysis overlooks a crucial aspect: the rapidly decaying nature of the homogeneous solution means it becomes negligible almost immediately. After the first few steps, the numerical solution is essentially tracking only the particular solution, for which much larger step sizes are acceptable.
-
-Furthermore, the large coefficients of the forcing terms (51cos(x) + 49sin(x)) help stabilize the solution. These terms contribute substantially to each step, preventing the amplification factor from the homogeneous part from dominating indefinitely.
-
-This phenomenon demonstrates an important principle: stability analysis based solely on the homogeneous equation provides necessary but sometimes overly conservative conditions for problems with forcing terms or rapidly decaying transients.
+This case illustrates why stiff problems often require either extremely small step sizes with explicit methods or the use of implicit methods (like the trapezoidal method) that offer unconditional stability for a wider range of λ values.
 
 ### Comprehensive Comparison of All Cases
 
 The four cases examined (combinations of λ = -1 and λ = -50 with h = 0.5 and h = 0.1) reveal several fundamental principles of numerical stability:
 
-1. **Theoretical vs. Practical Stability**: While theory provides clear stability bounds, practical stability can sometimes be achieved even when these bounds are moderately violated, especially when forced components dominate.
+1. **Stiffness and Step Size Sensitivity**: For λ = -50, the problem is stiff (contains components that change at vastly different rates), requiring much smaller steps than for λ = -1. This stiffness manifests as extreme sensitivity to step size choice.
 
-2. **Stiffness and Step Size Sensitivity**: For λ = -50, the problem is stiff (contains components that change at vastly different rates), requiring much smaller steps than for λ = -1. This stiffness manifests as extreme sensitivity to step size choice.
+2. **Stability vs. Accuracy**: For λ = -1, both step sizes produce stable solutions, but accuracy improves dramatically with the smaller step. This highlights that stability is necessary but not sufficient for accuracy.
 
-3. **Stability vs. Accuracy**: For λ = -1, both step sizes produce stable solutions, but accuracy improves dramatically with the smaller step. This highlights that stability is necessary but not sufficient for accuracy.
+3. **Catastrophic Instability Characteristics**: The cases with λ = -50 demonstrate classic catastrophic instability when the stability condition is violated, with errors growing exponentially and alternating in sign, eventually overwhelming any physically meaningful values.
 
-4. **Catastrophic Instability Characteristics**: The case λ = -50, h = 0.5 demonstrates classic catastrophic instability, with errors growing exponentially and alternating in sign, eventually overwhelming any physically meaningful values.
-
-5. **Time-Dependent Stability Behavior**: In some cases, a method may appear unstable initially but stabilize once rapidly varying transients decay, as seen in the λ = -50, h = 0.1 case.
+4. **Validity of Stability Theory**: The results confirm that the theoretical stability condition h ≤ -2/λ is indeed necessary for explicit Euler. When this condition is violated (as in both λ = -50 cases), the solution diverges rapidly.
 
 These observations highlight why stiff problems often require specialized numerical methods (like implicit methods) that offer unconditional stability regardless of step size.
 
@@ -618,18 +556,6 @@ $$|R(iy)|^2 = \frac{|1 + i\frac{y}{2}|^2}{|1 - i\frac{y}{2}|^2} = \frac{1^2 + (\
 
 This confirms that the boundary of the stability region is exactly the imaginary axis.
 
-#### Enhanced Explanation of Figure 7
-
-**Figure 7: A-Stability of the Trapezoidal Method** (trapezoidal_method_a_stability_complex_plane_analysis.png) provides a striking visual representation of the method's exceptional stability properties. The figure has several important features that merit explanation:
-
-1. **Complete Left Half-Plane**: The blue-shaded region covering the entire left half of the complex plane illustrates that the trapezoidal method is A-stable. This means that for any problem whose eigenvalues have negative real parts, the method will be unconditionally stable regardless of step size.
-
-2. **Imaginary Axis Boundary**: The black contour line along the imaginary axis represents where |R(z)| = 1 exactly. This means that for pure oscillatory problems (with eigenvalues on the imaginary axis), the trapezoidal method preserves the amplitude of oscillations perfectly.
-
-3. **Comparison with Euler's Method**: The red curve shows Euler's stability region for comparison – a small circle of radius 1 centered at (-1,0). This dramatic contrast explains why explicit methods like Euler often require impractically small steps for stiff problems, while the trapezoidal method remains stable with any step size.
-
-The subtitle "Entire Left Half-Plane Is Stable" emphasizes the most significant property of the trapezoidal method. This feature makes it particularly valuable for stiff differential equations, where the range of time scales in the problem would otherwise force explicit methods to use extremely small step sizes.
-
 #### Theoretical Significance and Practical Implications
 
 The stability analysis reveals that the trapezoidal method is **A-stable**, meaning its stability region includes the entire left half of the complex plane. This has profound implications for numerical ODE solving:
@@ -648,19 +574,19 @@ This analysis demonstrates why the trapezoidal method is a cornerstone of numeri
 
 ## Conclusion: Comprehensive Analysis of Numerical Methods
 
-This detailed analysis has explored four fundamental aspects of numerical analysis, providing both theoretical understanding and practical insights, with key findings visualized across seven figures:
+This detailed analysis has explored four fundamental aspects of numerical analysis, providing both theoretical understanding and practical insights:
 
-1. **Polynomial Interpolation with Chebyshev Nodes (Figures 1-3)**:
-   We demonstrated how strategic node placement dramatically improves approximation quality. Chebyshev nodes, with their elegant mathematical properties, effectively control Runge's phenomenon through their clustering near interval endpoints. Figure 2 reveals the nearly equioscillating error distribution with approximately n+1 peaks of similar magnitude, confirming the minimax property of Chebyshev approximation. Figure 3 dramatically demonstrates the superior performance of Chebyshev nodes over equidistant nodes by a factor of more than 9. This analysis highlights a critical principle in approximation theory: optimal node distribution can be more important than increasing the number of nodes.
+1. **Polynomial Interpolation with Chebyshev Nodes**:
+   We demonstrated how strategic node placement dramatically improves approximation quality. Chebyshev nodes, with their elegant mathematical properties, effectively control Runge's phenomenon through their clustering near interval endpoints. The nearly equioscillating error distribution and the consistent error reduction of approximately 35% between successive degrees confirmed the minimax optimality of these approximations. This analysis highlights a critical principle in approximation theory: optimal node distribution can be more important than increasing the number of nodes.
 
-2. **ODE Solution Methods Comparison (Figures 4-5)**:
-   The comparative analysis of Euler, trapezoidal, and RK4 methods illuminated the fundamental trade-offs between computational cost, accuracy, and implementation complexity. Figure 4 visually confirms the theoretical convergence rates by showing how closely each method tracks the exact solution. Figure 5 provides a quantitative error analysis with its distinctive "steep-then-leveling" pattern arising from the changing balance between terms in the ODE. This behavior, correctly represented in the visualization, demonstrates why higher-order methods like RK4 offer superior efficiency despite higher per-step costs. For the smoothly varying test problem, RK4 achieved machine precision accuracy with just 10 steps, while Euler would require thousands of steps for comparable precision.
+2. **ODE Solution Methods Comparison**:
+   The comparative analysis of Euler, trapezoidal, and RK4 methods illuminated the fundamental trade-offs between computational cost, accuracy, and implementation complexity. The results verified theoretical convergence rates and demonstrated why higher-order methods like RK4 offer superior efficiency despite higher per-step costs. For the smoothly varying test problem, RK4 achieved machine precision accuracy with just 10 steps, while Euler would require thousands of steps for comparable precision. This reinforces why method selection should consider both the nature of the problem and the accuracy requirements.
 
-3. **Effect of λ on IVP Stability (Figure 6)**:
-   The stability analysis with varying λ values provided crucial insights into numerical stability. Figure 6 dramatically illustrates how the case λ = -50, h = 0.5 demonstrates catastrophic instability as predicted by theory, with near-vertical line segments representing enormous jumps in the solution values. The figure also reveals the surprising stability of λ = -50, h = 0.1 despite violating the homogeneous stability condition, highlighting how forcing terms and rapidly decaying transients can significantly influence practical stability bounds. These visual characteristics are not errors but accurate representations of the mathematical behavior of stiff equations and demonstrate how theoretical stability conditions, while necessary, may sometimes be overly conservative.
+3. **Effect of λ on IVP Stability**:
+   The stability analysis with varying λ values provided crucial insights into numerical stability. The cases with λ = -50 demonstrated catastrophic instability when the stability condition was violated, confirming the necessity of the theoretical condition h ≤ -2/λ for explicit Euler. These results highlight the fundamental challenges posed by stiff systems and explain why specialized methods are often required for such problems.
 
-4. **Stability Region for the Trapezoidal Method (Figure 7)**:
-   The rigorous derivation of the trapezoidal method's stability region is visually confirmed in Figure 7, which clearly demonstrates its A-stability property—stability for all problems with eigenvalues having negative real parts, regardless of step size. The dramatic contrast between the trapezoidal method's unbounded stability region and Euler's limited circle explains why implicit methods are preferred for stiff problems. The figure illustrates the method's conservation properties along the imaginary axis, explaining its suitability for oscillatory problems.
+4. **Stability Region for the Trapezoidal Method**:
+   The rigorous derivation of the trapezoidal method's stability region demonstrated its A-stability property—stability for all problems with eigenvalues having negative real parts, regardless of step size. This unbounded stability region makes the trapezoidal method particularly valuable for stiff problems where explicit methods would require impractically small steps. The analysis also revealed the method's conservation properties along the imaginary axis, explaining its suitability for oscillatory problems.
 
 These analyses collectively demonstrate how theoretical mathematical principles translate directly into practical computational behavior. Understanding these principles enables informed selection and implementation of numerical methods, balancing accuracy, stability, and computational efficiency based on problem characteristics.
 
